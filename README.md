@@ -221,8 +221,8 @@ the function name:
    bigBulkyFunctionName (Just (a:b:_)) = ...
 ```
 
-In programming, there is the principle of DRY ("Don't Repeat
-Yourself"), that it is best for some fact to appear in only one place.
+In programming, there is the principle of DRY (“Don't Repeat
+Yourself”), that it is best for some fact to appear in only one place.
 This can be taken too far, but I feel it is applicable here, for the
 usual reasons:
 
