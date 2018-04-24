@@ -1,0 +1,148 @@
+import System.Environment
+import Data.Char
+import Control.Monad.State
+import Control.Applicative
+import Data.List
+import Data.Maybe
+
+
+--  YMMV
+tabWidth = 3 :: Int
+
+__ = True  -- second-best
+
+--  Yank up to end of quote.
+--  TODO multiline quote support
+skipQuote :: String -> (String, String)
+skipQuote s = go "" s where
+   go q []            = (q, [])
+   go q ('\\':[])     = (q++'\\':[], [])
+   go q ('"':s)       = (q++"\"", s)
+   go q ('\\':'\\':s) = go (q++"\\\\") s
+   go q ('\\':'"':s)  = go (q++"\\\"") s
+   go q (c:s)         = go (q++c:[]) s
+
+untab :: String -> String
+untab = go (0::Int) where
+   go _ [] = []
+   go m ('\t':l) = replicate (tabWidth-(m`mod`tabWidth)) ' ' ++ go 0 l
+   go m (c:l) = c : go (m+1) l
+
+isNameChar :: Char -> Bool
+isNameChar c = isAlphaNum c || c=='\'' || c=='_'
+
+--  Allow "ticks" or "underscores" as digit separators.
+--  That is, not settling on one proposal yet.
+tickedNums :: String -> String
+tickedNums []      = []
+tickedNums l@(x:m)
+   | isDigit x =
+      let (p1, p2) = span (\y -> isDigit y || isTick y) l in
+      filter (not.isTick) p1
+         ++ (reverse $ takeWhile isTick $ reverse p1) -- prob not needed
+         ++ tickedNums p2
+   | isNameChar x =
+      let (nm, rest) = span isNameChar l
+      in nm ++ tickedNums rest
+   | (x=='\\' || x=='\''), mh:mt <- m
+               = x : mh : tickedNums mt
+   | x=='"'    = let (a, b) = skipQuote m in '"' : a ++ tickedNums b
+   | __        = x : tickedNums m
+  where
+   isTick c = c == '\'' || c == '_'
+
+--  Empty guards are filled in with True.
+--  This was formerly monadic and could perhaps be simplified.
+emptyGuard :: String -> String
+emptyGuard (q:c:s) | q=='\\' || q=='\'' =
+   [q, c] ++ emptyGuard s
+emptyGuard ('"':s) =
+   let (a, b) = skipQuote s in '"' : a ++ emptyGuard b
+emptyGuard (c1:'|':c2:s) | isSpace c1 && isSpace c2 =
+   c1 : '|' : pfx ++ emptyGuard p2 where
+      (p1, p2) = span isSpace s
+      pfx 
+         | take 1 p2 `elem` ["=", "→"] || take 2 p2 == "->" =
+            case length p1 of
+               x | x<4  -> "True"
+                 | __   -> c2 : "True" ++ drop 4 p1
+         | __ = c2 : p1
+emptyGuard (c:s) = c : emptyGuard s
+emptyGuard _ = []
+
+type DittoHist = [(Int, String)]
+
+columnPragma :: Int -> String
+columnPragma col = "{-#COLUMN " ++ show col ++ "#-}"
+
+--  "Ditto marks" for repeated names in definitions.
+--  TODO? allow mid-line names to be ditto'ed
+dittoM :: String -> State DittoHist String
+dittoM s = (sp1 ++) <$>
+   case rest of
+      '\'':'\'':x:rest' | isSpace x         -> doDitto 2 rest'
+      c:x:rest' | c `elem` "”〃", isSpace x -> doDitto 1 rest'
+      c:_ | isLower c                       -> do
+         modify $ \hist ->
+            (indent, takeWhile isNameChar rest)
+               : dropWhile ((>= indent) . fst) hist
+         pure rest
+      _                                     -> pure rest
+   where
+      (sp1, rest) = span isSpace s
+      indent = length sp1
+      doDitto :: Int -> String -> State DittoHist String
+      doDitto wid rest' = do
+         valm <- lookup indent <$> get
+         pure $ case valm of
+            Just val ->
+               let (sp2, rest'') = span isSpace rest' in
+                  val ++
+                  columnPragma (indent + wid + length sp2 + 2) ++
+                  rest''
+            _ -> error $ "Orphaned ditto mark:  " ++ s
+
+dittoMarks :: [String] -> [String]
+dittoMarks inp = flip evalState [] $ mapM dittoM inp
+
+--  TODO can get messed up by quotes
+decomment :: String -> String
+decomment s = case s of
+   '-':'-':_  -> []
+   c:s'       -> c : decomment s'
+   _          -> []
+
+--  Not so efficient....
+stripSpace :: String -> String
+stripSpace = reverse . dropWhile isSpace . reverse . dropWhile isSpace
+
+commas :: [String] -> [String]
+commas []     = []
+commas (l:ls) = (: commas ls) $ fromMaybe l $ do
+   ',' : l' <- pure $ dropWhile isSpace $ reverse $ decomment l
+   nxt : _  <- pure $ dropWhile (null . stripSpace . decomment) ls
+   c : _    <- pure $ dropWhile isSpace nxt
+   guard $ c `elem` "])}"
+   pure $ reverse l'
+
+commasEnd :: [String] -> [String]
+commasEnd []     = []
+commasEnd (l:ls) = fromMaybe (l : commasEnd ls) $ do
+   c : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
+   guard $ c `elem` "{(["
+   nxt : ls' <- pure ls
+   (sp, ',' : nxt') <- pure $ span isSpace nxt
+   pure $ l : (sp ++ nxt') : commasEnd ls'
+
+fullProcess :: String -> String 
+fullProcess =
+   unlines . commasEnd . commas . dittoMarks .
+   map (emptyGuard . tickedNums . untab) . lines
+
+main = do
+   [nm, inf, outf] <- getArgs
+   file <- readFile inf
+   writeFile outf $
+      "{-# LINE 1 \"" ++ nm ++ "\" #-}\n" ++
+      fullProcess file
+
