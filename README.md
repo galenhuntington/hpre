@@ -21,6 +21,8 @@ Here are the features, along with their rationales:
 
 ##  Ticked numbers
 
+_An extension `NumericUnderscores` will land in GHC 8.6 that provides this feature._
+
 Large integer literals can be hard to read off.  Many languages
 provide native syntax for spacing them out.  For example, Perl allows
 one to write one billion as `1_000_000_000` rather than the hypnotic
