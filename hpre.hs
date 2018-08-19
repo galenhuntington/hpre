@@ -33,6 +33,7 @@ isNameChar c = isAlphaNum c || c=='\'' || c=='_'
 
 --  Allow "ticks" or "underscores" as digit separators.
 --  That is, not settling on one proposal yet.
+--  With NumericUnderscores an accepted extension, this can be deprecated.
 tickedNums :: String -> String
 tickedNums []      = []
 tickedNums l@(x:m)
@@ -44,7 +45,7 @@ tickedNums l@(x:m)
    | isNameChar x =
       let (nm, rest) = span isNameChar l
       in nm ++ tickedNums rest
-   | (x=='\\' || x=='\''), mh:mt <- m
+   | x=='\\' || x=='\'', mh:mt <- m
                = x : mh : tickedNums mt
    | x=='"'    = let (a, b) = skipQuote m in '"' : a ++ tickedNums b
    | __        = x : tickedNums m
