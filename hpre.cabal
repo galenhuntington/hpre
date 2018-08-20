@@ -1,0 +1,14 @@
+name:                hpre
+version:             1.0.1
+license:             MIT
+license-file:        LICENSE.md
+author:              Galen Huntington
+category:            Language
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+executable hpre
+  main-is:             hpre.hs
+  build-depends:       base, mtl, parsec
+  default-language:    Haskell2010

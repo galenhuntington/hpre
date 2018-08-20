@@ -4,24 +4,16 @@ productivity without harming readability.
 
 I have been using Haskell since 2005 and am largely self-taught.
 As such, I developed my own habits and conventions, and found a few
-points that bothered me.  I have slowly developed `hpre` (formerly
-`gghc`) over the years to address these.
-
-To use, add the command line options `-F -pgmF hpre` to `ghc` (or
-`runghc`, `ghci`, `runhaskell`, etc.).  `hpre` needs to be compiled
-and put in your `$PATH`, or you can provide an absolute path.
-An individual file can also just include this line:
-
-```haskell
-{-# OPTIONS_GHC -F -pgmF hpre #-}
-```
+aspects of the language that irked me.  I have slowly developed `hpre`
+(formerly `gghc`) over the years to address these.
 
 Here are the features, along with their rationales:
 
 
 ##  Ticked numbers
 
-_An extension `NumericUnderscores` will land in GHC 8.6 that provides this feature._
+_An extension `NumericUnderscores` landed in GHC 8.6 that meets this
+need; as such, I will eventually remove this feature._
 
 Large integer literals can be hard to read off.  Many languages
 provide native syntax for spacing them out.  For example, Perl allows
@@ -231,7 +223,7 @@ usual reasons:
 First, this is a lot of repetitive typing.  One can of course copy
 and paste in any reasonable editor, but that's analogous to saying
 that a language is quick to code in, as long as you have an IDE to
-do all the tedious stuff.
+generate all the tedious boilerplate.
 
 Relatedly, we introduce a source of error:  A typo in one of those
 copies can cause a failure, perhaps at runtime.  Suppose the last
@@ -241,10 +233,10 @@ line is mistyped as
    bigBulkyFunctoinName (Just (a:b:_)) = ...
 ```
 
-Note the `i`/`o` transposition.  This module will still compile
-(although perhaps with more warnings), but will error out at runtime
-if this case arises.  If it's an uncommon case, this might suddenly
-occur in production weeks later and bring down your app.
+This module will still compile (although perhaps with more warnings),
+but will error out at runtime if this case arises.  If it's an uncommon
+case, this might suddenly occur in production weeks later and bring
+down your app.
 
 This syntax appears to be motivated by mathematical notation, but
 mathematicians tend to use short identifiers (such as _f_ or **fib**),
@@ -271,8 +263,8 @@ some function.  These co-exist during testing:
 
 Once it's time to swap in the new version, in most languages I
 could just switch the names, but for Haskell I have to change every
-definition.  This comes up a lot for me.  More generally, I might
-rename a function for any reason.
+definition.  This comes up a lot for me, in addition to the many
+other times I want to rename a function.
 
 My solution is a “ditto mark”, `''`, which abbreviates the
 identifier above it if it starts the line.  So, in
@@ -326,7 +318,7 @@ area b x = 3.141_593 * sq b where sq True  = x*x
 ```
 
 will fail because the `sq`s will not align when the `_` is taken out.
-However, I never write code like that.
+However, I personally never rely on alignment in this way.
 
 The parsing is somewhat primitive; I don't try to handle Haskell's
 entire syntax.  As such, it's surely possible to confuse it.  However,
@@ -365,15 +357,23 @@ addressed with more effort.  Also, use of COLUMN pragmas is a work
 in progress.
 
 
-##  Installation
+##  Installation and use
 
-Knowledge of Haskell is assumed, so building should be straightforward.
+`hpre` can be installed by running `cabal install` from its directory.
+Alternatively, you can build the binary directly:
 
 ```bash
 ghc --make -O hpre.hs
 ```
 
-Note that Haskell pre-processors take three arguments: the module name,
-the input file, and the output file.  This differs from typical command
-line functions, which for instance can usually take stdin to stdout.
+To use, add the command line options `-F -pgmF hpre` to `ghc` (or
+`runghc`, `ghci`, `runhaskell`, `ghc-options` in `cabal`, etc.),
+or add this line to individual Haskell files:
+
+```haskell
+{-# OPTIONS_GHC -F -pgmF hpre #-}
+```
+
+Make sure that wherever `hpre` is installed (e.g., `~/.cabal/bin/`),
+your build system can find it, or put a full path after `-pgmF`.
 
