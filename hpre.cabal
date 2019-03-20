@@ -1,14 +1,26 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: ca7d759c8f4621d07ec17bd0d884725975287f1183486a07cb43b3695019afd0
+
 name:                hpre
-version:             1.0.1
+version:             1.0.2
+synopsis:            Simple but handy Haskell preprocessor.
 license:             MIT
-license-file:        LICENSE.md
 author:              Galen Huntington
+maintainer:          Galen Huntington
 category:            Language
 build-type:          Simple
-extra-source-files:  README.md
-cabal-version:       >=1.10
 
 executable hpre
-  main-is:             hpre.hs
-  build-depends:       base, mtl, parsec
-  default-language:    Haskell2010
+  main-is: hpre.hs
+  other-modules:
+      Paths_hpre
+  build-depends:
+      base ==4.*
+    , mtl ==2.*
+    , parsec ==3.*
+  default-language: Haskell2010

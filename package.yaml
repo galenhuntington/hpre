@@ -1,0 +1,14 @@
+name: hpre
+version: 1.0.2
+license:  MIT
+author: Galen Huntington
+synopsis: Simple but handy Haskell preprocessor.
+category:  Language
+
+executable:
+   main: hpre.hs
+
+dependencies:
+   base: 4.*
+   mtl: 2.*
+   parsec: 3.*

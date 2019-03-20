@@ -1,4 +1,4 @@
-`hpre` is a simple Haskell code pre-processor that adds a few minor
+`hpre` is a simple Haskell code preprocessor that adds a few minor
 syntactic features.  They are meant to be minimal, and increase
 productivity without harming readability.
 
@@ -359,8 +359,8 @@ in progress.
 
 ##  Installation and use
 
-`hpre` can be installed by running `cabal install` from its directory.
-Alternatively, you can build the binary directly:
+`hpre` can be installed by running `cabal install` or `stack install`
+from its directory.  Alternatively, you can build the binary directly:
 
 ```bash
 ghc --make -O hpre.hs
