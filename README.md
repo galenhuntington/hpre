@@ -295,6 +295,15 @@ I find this dovetails nicely with type annotations:
    ''  (Just (a:b:_)) = ...
 ```
 
+Dittos don’t need to be on the top level; the only requirement is
+that the function name be the first word on the line:
+
+```haskell
+   fromDigits base = loop where
+      loop (x:l) = x * base + loop l
+      ''   []    = 0
+```
+
 `hpre` also accepts the Unicode ditto mark (`”`) and the CJK ditto
 mark (`〃`).
 
