@@ -321,12 +321,13 @@ an equal number of spaces when possible—and I almost never encounter
 problems, but one should be aware of the possibility.  As an example,
 
 ```haskell
-area b x = 3.141_593 * sq b where sq True  = x*x
-                                  sq False = x
+   area :: Bool -> Double -> Double
+   ''  b x = pi * sq b where sq True  = x*x
+                             sq False = x
 ```
 
-will fail because the `sq`s will not align when the `_` is taken out.
-However, I personally never rely on alignment in this way.
+will fail to parse because the `sq`s will not align when the `''` is
+expanded.  However, I personally never rely on alignment in this way.
 
 The parsing is somewhat primitive; I don’t try to handle Haskell’s
 entire syntax.  As such, it’s surely possible to confuse it.  However,
