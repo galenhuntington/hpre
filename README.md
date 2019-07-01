@@ -18,16 +18,16 @@ need; as such, I will eventually remove this feature._
 Large integer literals can be hard to read off.  Many languages
 provide native syntax for spacing them out.  For example, Perl allows
 one to write one billion as `1_000_000_000` rather than the hypnotic
-`1000000000`.  Haskell does not, so I've added it.
+`1000000000`.  Haskell does not, so I’ve added it.
 
 My first try at a spacing symbol is a tick mark (apostrophe), `'`, but
-I'm also experimenting with `_`.  So you can write `1'000'000'000` or
+I’m also experimenting with `_`.  So you can write `1'000'000'000` or
 `1_000_000_000`, and `hpre` will take out the non-digits.  This made
 a number of my mathematical projects more readable.
 
 Since GHC 7.8, the language option `NumDecimals` allows writing one
 billion (of an `Integral` type) as `1e9`.  However, you might not
-want this extension, and anyway it won't help if your number is not
+want this extension, and anyway it won’t help if your number is not
 mostly a row of zeroes, such as `1'073'741'824`.
 
 No existing Haskell syntax (including GHC extensions) appears to
@@ -50,7 +50,7 @@ code diffs look like this:
 This can make it harder to see at a glance that the only change was
 adding an item.
 
-The Haskell community's answer to this has been to adopt
+The Haskell community’s answer to this has been to adopt
 “Utrecht-style” commas, at the start of the line:
 
 ```haskell
@@ -63,15 +63,17 @@ The Haskell community's answer to this has been to adopt
 
 The idea being that you can add `, itemFour` easily.
 
-However, this has two drawbacks.  First, and this is subjective,
-it is ugly.  Commas were not meant to be dangled like this, but to
-sit comfortably after a word.
+However, this is not really satisfactory.  For one, I find it ugly;
+commas were not meant to be dangled like this, but to sit comfortably
+after a word.  Nevertheless, there is an argument that code is easier
+to scan with delimiters at the start of lines, and the community has
+largely moved to this style, so I have been reluctantly adopting it.
 
-Second, and more importantly, it doesn't even fix the problem.
+But the more important point is that it doesn’t fix the problem.
 Instead of the last item being exceptional, now the first is.
-The motivation appears to be that it is more common to add to the end
-of a list than the beginning.  But one might want to move `itemOne`
-down, or add before it, or remove it.
+One could argue that it is more common to add to the end of a list
+than the beginning.  But one might want to move `itemOne` down,
+or add before it, or remove it.
 
 Many other languages sensibly allow a _trailing comma_ in such lists,
 after the last item.  Java, Python, Perl, Ruby, and modern Javascript
@@ -109,20 +111,26 @@ This could in principle conflict with the tuple section extension,
 where `(True,)` is a function `a -> (Bool, a)`, but it would be
 madness to insert a newline before the closing parenthesis.
 
-I also have experimental support for initial commas:
+Extra _leading_ commas are similarly supported, so these can be
+written:
 
 ```haskell
    mapM_ print [
       , itemOne
       , itemTwo
       ]
+
+   data Person = {
+      , Name :: Text
+      , Age  :: Int
+      } deriving (Eq, Show)
 ```
 
 
 ##  Tab expansion
 
 The tab versus spaces debate is an old one, and still unresolved
-(e.g., Go defies the general trend by enforcing tabs).  The Haskell
+(e.g., Python has settled on spaces, Go on tabs).  The Haskell
 community today firmly endorses spaces, but I remain ambivalent.
 GHC now warns on tabs (although `-fno-warn-tabs` can disable that),
 but interprets them as eight-space jumps.
@@ -136,7 +144,7 @@ the source to use that as a tabstop before passing it along to GHC.
 Thus, you can continue to use your favorite tabstop, and, if you change
 your mind about it (an advantage of tabs), you can change it in `hpre`.
 
-If you don't use tabs, this feature has no effect.
+If you don’t use tabs, this feature has no effect.
 
 
 ##  Empty guards
@@ -157,7 +165,7 @@ is to use `otherwise`.
 `otherwise` is not part of the language, but defined in the standard
 Prelude as the value `True`.
 
-The first thing that bugs me about `otherwise` is that it's _bulky_.
+The first thing that bugs me about `otherwise` is that it’s _bulky_.
 In many cases, as in the above two, it visually dwarfs the other
 parts of the code, including the important condition.
 
@@ -170,7 +178,7 @@ nicer solution, where the `otherwise` is optional.  Imagine this:
 ```
 
 To me this is much more pleasant and cleaner.  (NB:  In Clean the
-second `|` is actually omitted, but I don't copy that.)
+second `|` is actually omitted, but I don’t copy that.)
 
 And the idea fits nicely.  Consider the “pattern guards” extension,
 standard in Haskell 2010, which allows multiple conditions in a guard:
@@ -190,13 +198,13 @@ it could know _a priori_ that the guards are exhaustive.
 
 More philosophically, `otherwise` seems like a hack.  The “else”
 case should be part of the _syntax_, but instead one needs the
-namespace.  If, say, for some reason you didn't bring all of the
+namespace.  If, say, for some reason you didn’t bring all of the
 Prelude into scope, you might not have the syntactic ability to write
 a default case.
 
 `hpre` adds support for empty guards.  It checks for a `|` followed by
 whitespace and an `=` or `->` on the same line, and writes in a literal
-`True`.  This doesn't give the full power that a compiler-supported
+`True`.  This doesn’t give the full power that a compiler-supported
 empty guard would, but it works well in practice, and allows the last
 `fac` function to be written.
 
@@ -215,13 +223,13 @@ the function name:
    bigBulkyFunctionName (Just (a:b:_)) = ...
 ```
 
-In programming, there is the principle of DRY (“Don't Repeat
+In programming, there is the principle of DRY (“Don’t Repeat
 Yourself”), that it is best for some fact to appear in only one place.
 This can be taken too far, but I feel it is applicable here, for the
 usual reasons:
 
 First, this is a lot of repetitive typing.  One can of course copy
-and paste in any reasonable editor, but that's analogous to saying
+and paste in any reasonable editor, but that’s analogous to saying
 that a language is quick to code in, as long as you have an IDE to
 generate all the tedious boilerplate.
 
@@ -234,7 +242,7 @@ line is mistyped as
 ```
 
 This module will still compile (although perhaps with more warnings),
-but will error out at runtime if this case arises.  If it's an uncommon
+but will error out at runtime if this case arises.  If it’s an uncommon
 case, this might suddenly occur in production weeks later and bring
 down your app.
 
@@ -261,7 +269,7 @@ some function.  These co-exist during testing:
    propItWorks x = isPrime x == isPrime' x
 ```
 
-Once it's time to swap in the new version, in most languages I
+Once it’s time to swap in the new version, in most languages I
 could just switch the names, but for Haskell I have to change every
 definition.  This comes up a lot for me, in addition to the many
 other times I want to rename a function.
@@ -301,7 +309,7 @@ the names:
    get3 (_, _, x) = x
 ```
 
-Some may find ditto marks unpalatable, but I've been quite pleased
+Some may find ditto marks unpalatable, but I’ve been quite pleased
 with how they have worked out in practice.
 
 
@@ -320,8 +328,8 @@ area b x = 3.141_593 * sq b where sq True  = x*x
 will fail because the `sq`s will not align when the `_` is taken out.
 However, I personally never rely on alignment in this way.
 
-The parsing is somewhat primitive; I don't try to handle Haskell's
-entire syntax.  As such, it's surely possible to confuse it.  However,
+The parsing is somewhat primitive; I don’t try to handle Haskell’s
+entire syntax.  As such, it’s surely possible to confuse it.  However,
 I have used `hpre` in several large and complex projects without
 problems.
 
