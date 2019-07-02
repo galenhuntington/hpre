@@ -33,7 +33,8 @@ isNameChar c = isAlphaNum c || c=='\'' || c=='_'
 
 --  Allow "ticks" or "underscores" as digit separators.
 --  That is, not settling on one proposal yet.
---  With NumericUnderscores an accepted extension, this can be deprecated.
+--  With NumericUnderscores an accepted extension, this is deprecated.
+--  It should be removed eventually, as it can interfere with alignment.
 tickedNums :: String -> String
 tickedNums []      = []
 tickedNums l@(x:m)

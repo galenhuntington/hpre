@@ -324,19 +324,25 @@ with how they have worked out in practice.
 
 ##  Limitations and future work
 
-These extensions can in principle interfere with alignment.  I try to
-minimize this effect—for example, the `True` in empty guards replaces
-an equal number of spaces when possible—and I almost never encounter
-problems, but one should be aware of the possibility.  As an example,
+These extensions can in principle interfere with alignment.  I try
+to minimize this effect—for example, the `True` in empty guards
+replaces an equal number of spaces when possible, and `COLUMN` pragmas
+are used with ditto expansion—and I almost never encounter problems,
+but one should be aware of the possibility.  As an example,
 
 ```haskell
-   area :: Bool -> Double -> Double
-   ''  b x = pi * sq b where sq True  = x*x
-                             sq False = x
+     bad a b | b = 1
+             |   = f a where f 0 = 5
+                             f a = a + 1
 ```
 
-will fail to parse because the `sq`s will not align when the `''` is
-expanded.  However, I personally never rely on alignment in this way.
+will fail to parse because the `f`s will not align when `True` is
+inserted.  However, I personally never rely on alignment in this way,
+and this would be highly unusual in any case; the condition being
+one character wider would result in no problem.
+
+Until the ticked numbers feature is removed, similar alignment problems
+could occur when `'` and `_` are removed from lines.
 
 The parsing is somewhat primitive; I don’t try to handle Haskell’s
 entire syntax.  As such, it’s surely possible to confuse it.  However,
@@ -367,12 +373,6 @@ data Foobar =
    | Foo
    | Bar
 ```
-
-###  More adjustments
-
-The issues with alignment such as those above could probably be
-addressed with more effort.  Also, use of COLUMN pragmas is a work
-in progress.
 
 
 ##  Installation and use
