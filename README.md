@@ -36,6 +36,9 @@ conflict with either notation.
 
 ##  Trailing commas
 
+_An extension `ExtraCommas` is being considered that may eventually
+make this mostly obsolete._
+
 That the last item in a comma-separated list does not take a comma is
 a recurring nuisance.  It is easy when adding to the list, or moving
 entries around, to fail to attend to this exception.  Furthermore,
@@ -111,8 +114,7 @@ This could in principle conflict with the tuple section extension,
 where `(True,)` is a function `a -> (Bool, a)`, but it would be
 madness to insert a newline before the closing parenthesis.
 
-Extra _leading_ commas are similarly supported, so these can be
-written:
+_Leading_ commas are similarly supported, so these can be written:
 
 ```haskell
    mapM_ print [
@@ -181,7 +183,7 @@ To me this is much more pleasant and cleaner.  (NB:  In Clean the
 second `|` is actually omitted, but I don’t copy that.)
 
 And the idea fits nicely.  Consider the “pattern guards” extension,
-standard in Haskell 2010, which allows multiple conditions in a guard:
+standard in Haskell2010, which allows multiple conditions in a guard:
 
 ```haskell
    bar x | not (null x), Just y <- lookup 1 x, y /= 3 = ...
@@ -318,8 +320,8 @@ the names:
    get3 (_, _, x) = x
 ```
 
-Some may find ditto marks unpalatable, but I’ve been quite pleased
-with how they have worked out in practice.
+Some may find ditto marks unpalatable, but I’m quite pleased with
+how they have worked out in practice.
 
 
 ##  Limitations and future work
@@ -333,7 +335,7 @@ but one should be aware of the possibility.  As an example,
 ```haskell
      bad a b | b = 1
              |   = f a where f 0 = 5
-                             f a = a + 1
+                             f x = x + 1
 ```
 
 will fail to parse because the `f`s will not align when `True` is
