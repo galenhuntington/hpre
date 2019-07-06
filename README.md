@@ -193,10 +193,11 @@ An empty guard is a natural generalization of this, where the number
 of conditions can be zero.
 
 A practical application is that Haskell compilers should and do check
-for incomplete definitions and cases.  To this end, `otherwise`
-is special-cased into GHC as something known to always be true,
-which is ugly itself.  If the compiler accepted zero conditions,
-it could know _a priori_ that the guards are exhaustive.
+for incomplete definitions and cases.  To this end, `otherwise` is
+special-cased into GHC as something known to always be true, which is
+ugly itself.  Indeed, `elsewise = True; x | elsewise = ()` will issue
+a warning with `-Wincomplete-patterns`.  If the compiler accepted zero
+conditions, it could know _a priori_ that the guards are exhaustive.
 
 More philosophically, `otherwise` seems like a hack.  The “else”
 case should be part of the _syntax_, but instead one needs the
