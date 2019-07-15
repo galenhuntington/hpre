@@ -132,9 +132,9 @@ Finally, there is experimental support for leading _bars_ in `data`
 declarations:
 
 ```haskell
-data Foobar =
-   | Foo
-   | Bar
+   data Foobar =
+      | Foo
+      | Bar
 ```
 
 Trailing bars are not currently supported.
