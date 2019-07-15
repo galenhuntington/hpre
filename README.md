@@ -137,6 +137,8 @@ data Foobar =
    | Bar
 ```
 
+Trailing bars are not currently supported.
+
 
 ##  Tab expansion
 
@@ -360,8 +362,6 @@ The parsing is somewhat primitive; I don’t try to handle Haskell’s
 entire syntax.  As such, it’s surely possible to confuse it.  However,
 I have used `hpre` in several large and complex projects without
 problems.
-
-Other ideas I am considering:
 
 ###  Import lists
 
