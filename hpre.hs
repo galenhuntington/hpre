@@ -114,9 +114,15 @@ decomment s = case s of
    c:s'       -> c : decomment s'
    _          -> []
 
---  Not so efficient....
 stripSpace :: String -> String
 stripSpace = reverse . dropWhile isSpace . reverse . dropWhile isSpace
+
+--  If c is the first non-space character, replace with space.
+spaceOut :: Char -> String -> Maybe String
+spaceOut c s =
+   case span isSpace s of
+      (sp, c' : s') | c == c' -> Just $ sp ++ ' ' : s'
+      _                       -> Nothing
 
 commasR :: [String] -> [String]
 commasR []     = []
@@ -133,12 +139,21 @@ commasL (l:ls) = fromMaybe (l : commasL ls) $ do
    c : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
    guard $ c `elem` "{(["
    nxt : ls' <- pure ls
-   (sp, ',' : nxt') <- pure $ span isSpace nxt
-   pure $ l : (sp ++ nxt') : commasL ls'
+   nxt' <- spaceOut ',' nxt
+   pure $ l : nxt' : commasL ls'
+
+dataBarsL :: [String] -> [String]
+dataBarsL []    = []
+dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
+   guard $ "data " `isPrefixOf` l
+   '=' : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
+   nxt : ls' <- pure ls
+   nxt' <- spaceOut '|' nxt
+   pure $ l : nxt' : dataBarsL ls'
 
 process :: String -> String 
 process =
-   unlines . commasL . commasR . dittoMarks .
+   unlines . dataBarsL . commasL . commasR . dittoMarks .
    map (emptyGuard . tickedNums . untab) . lines
 
 main = do

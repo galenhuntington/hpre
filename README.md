@@ -34,7 +34,7 @@ No existing Haskell syntax (including GHC extensions) appears to
 conflict with either notation.
 
 
-##  Trailing commas
+##  Trailing commas and the like
 
 _An extension `ExtraCommas` is being considered that may eventually
 make this mostly obsolete._
@@ -126,6 +126,15 @@ _Leading_ commas are similarly supported, so these can be written:
       , Name :: Text
       , Age  :: Int
       } deriving (Eq, Show)
+```
+
+Finally, there is experimental support for leading _bars_ in `data`
+declarations:
+
+```haskell
+data Foobar =
+   | Foo
+   | Bar
 ```
 
 
@@ -365,17 +374,6 @@ import Data.Map.Strict (Map)
 
 There is also the general redundancy of writing `import` over and over.
 I have some ideas for “import blocks”.
-
-###  Data definitions
-
-Possibly, the trailing comma idea could extend
-to `data` definitions, something like
-
-```haskell
-data Foobar =
-   | Foo
-   | Bar
-```
 
 
 ##  Installation and use
