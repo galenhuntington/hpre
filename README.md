@@ -173,7 +173,7 @@ is to use `otherwise`.
                  | otherwise -> q + r
 ```
 
-`otherwise` is not part of the language, but defined in the standard
+`otherwise` is not part of the language, but is defined in the standard
 Prelude as the value `True`.
 
 The first thing that bugs me about `otherwise` is that it’s _bulky_.
