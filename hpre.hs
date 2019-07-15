@@ -118,27 +118,27 @@ decomment s = case s of
 stripSpace :: String -> String
 stripSpace = reverse . dropWhile isSpace . reverse . dropWhile isSpace
 
-commas :: [String] -> [String]
-commas []     = []
-commas (l:ls) = (: commas ls) $ fromMaybe l $ do
+commasR :: [String] -> [String]
+commasR []     = []
+commasR (l:ls) = (: commasR ls) $ fromMaybe l $ do
    ',' : l' <- pure $ dropWhile isSpace $ reverse $ decomment l
    nxt : _  <- pure $ dropWhile (null . stripSpace . decomment) ls
    c : _    <- pure $ dropWhile isSpace nxt
    guard $ c `elem` "])}"
    pure $ reverse l'
 
-commasEnd :: [String] -> [String]
-commasEnd []     = []
-commasEnd (l:ls) = fromMaybe (l : commasEnd ls) $ do
+commasL :: [String] -> [String]
+commasL []     = []
+commasL (l:ls) = fromMaybe (l : commasL ls) $ do
    c : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
    guard $ c `elem` "{(["
    nxt : ls' <- pure ls
    (sp, ',' : nxt') <- pure $ span isSpace nxt
-   pure $ l : (sp ++ nxt') : commasEnd ls'
+   pure $ l : (sp ++ nxt') : commasL ls'
 
-fullProcess :: String -> String 
-fullProcess =
-   unlines . commasEnd . commas . dittoMarks .
+process :: String -> String 
+process =
+   unlines . commasL . commasR . dittoMarks .
    map (emptyGuard . tickedNums . untab) . lines
 
 main = do
@@ -146,5 +146,5 @@ main = do
    file <- readFile inf
    writeFile outf $
       "{-# LINE 1 \"" ++ nm ++ "\" #-}\n" ++
-      fullProcess file
+      process file
 

@@ -199,7 +199,7 @@ ugly itself.  Indeed, `elsewise = True; x | elsewise = ()` will issue
 a warning with `-Wincomplete-patterns`.  If the compiler accepted zero
 conditions, it could know _a priori_ that the guards are exhaustive.
 
-More philosophically, `otherwise` seems like a hack.  The “else”
+More philosophically, `otherwise` feels like a hack.  The “else”
 case should be part of the _syntax_, but instead one needs the
 namespace.  If, say, for some reason you didn’t bring all of the
 Prelude into scope, you might not have the syntactic ability to write
