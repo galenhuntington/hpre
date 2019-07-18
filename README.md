@@ -271,14 +271,14 @@ some function.  These co-exist during testing:
 
 ```haskell
    isPrime :: Integer -> Bool
-   isPrime n = ... even worse algorithm than below ...
+   isPrime 0 = False
+   isPrime 1 = False
+   isPrime 2 = True
+   isPrime n | n < 0  = False
+             |        = all (\x -> n `mod` x /= 0) [2 .. n-1]
 
    isPrime' :: Integer -> Bool
-   isPrime' 0 = False
-   isPrime' 1 = False
-   isPrime' 2 = True
-   isPrime' n | n < 0  = False
-              |        = all (\x -> n `mod` x /= 0) [2 .. n-1]
+   isPrime' n = ... some more efficient algorithm ...
 
    propItWorks x = isPrime x == isPrime' x
 ```
