@@ -365,19 +365,18 @@ import           Data.Set (Set)
 after the module name, which somewhat obviates this.)
 
 Meanwhile, qualification seems an unnecessary feature.  It is rare
-that one wants to use `as` _un_qualified.  Most other languages,
-including those Haskell-inspired, do not have any analogous keyword.
+that one wants to use `as` _un_​qualified.  No other language I
+know of, including those Haskell-inspired, has any such keyword.
 For instance, in PureScript `as` in an import always means qualified.
 
-Haskell is thus rather alone in optimizing the syntax for the rarest
-of cases.
+Haskell rather singularly optimizes its syntax for the rarest of cases.
 
-`hpre` alters and extends the import syntax with the following
+`hpre` extends and alters the import syntax with the following
 two rules:
 
 1.  A module may be imported multiple times in one statement, by
 separating specifiers with commas.  For instance `import Foo as A,
-as B` will import it into both namespaces.
+as B` will import the module into both namespaces.
 
 2.  Any import with an `as` is automatically qualified.
 
@@ -410,13 +409,14 @@ import Control.Exception, as Exc
 That is, this will import all symbols from the module both unqualified
 and with `Exc.`.  (A _trailing_ comma, however, is ignored.)
 
-If an import is explicitly `qualified`, `hpre` leaves it unchanged.
+If an import is explicitly `qualified`, it is left unchanged, although
+eventually I may make this an error.
 
 Unlike all other `hpre` features, multiplex imports can change the
 meaning of valid Haskell programs, since `as` imports are now all
-qualified.  As such, currently it is off by default, and is activated
-by putting `--+` on a line by itself, which causes processing of
-import statements from then on.
+qualified.  For this reason, it is off by default, and is activated by
+putting `--+` on a line by itself, which causes processing of import
+statements from then on.
 
 In the future, I may drop this rule, and simply have `hpre` transform
 all imports, accepting that it is not fully compatible.  This will
