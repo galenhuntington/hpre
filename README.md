@@ -139,6 +139,10 @@ declarations:
 
 Trailing bars are not currently supported.
 
+There are other places where extra delimiters might be handy, such
+as pattern guards and language extension lists, but these are rare
+enough cases that I have no immediate plans to add them.
+
 
 ##  Tab expansion
 
@@ -193,8 +197,9 @@ nicer solution, where the `otherwise` is optional.  Imagine this:
 To me this is much more pleasant and cleaner.  (NB:  In Clean the
 second `|` is actually omitted, but I don’t copy that.)
 
-And the idea fits nicely.  Consider the “pattern guards” extension,
-standard in Haskell2010, which allows multiple conditions in a guard:
+And the idea fits nicely with existing syntax.  Consider the “pattern
+guards” extension, standard in Haskell2010, which allows multiple
+conditions in a guard:
 
 ```haskell
    bar x | not (null x), Just y <- lookup 1 x, y /= 3 = ...
@@ -211,16 +216,15 @@ a warning with `-Wincomplete-patterns`.  If the compiler accepted zero
 conditions, it could know _a priori_ that the guards are exhaustive.
 
 More philosophically, `otherwise` feels like a hack.  The “else”
-case should be part of the _syntax_, but instead one needs the
-namespace.  If, say, for some reason you didn’t bring all of the
+case should be part of the _syntax_, but instead the namespace
+is needed.  If, say, for some reason you didn’t bring all of the
 Prelude into scope, you might not have the syntactic ability to write
 a default case.
 
 `hpre` adds support for empty guards.  It checks for a `|` followed by
 whitespace and an `=` or `->` on the same line, and writes in a literal
 `True`.  This doesn’t give the full power that a compiler-supported
-empty guard would, but it works well in practice, and allows the last
-`fac` function to be written.
+empty guard would, but it works quite well in practice.
 
 
 ##  Ditto marks
@@ -285,8 +289,8 @@ some function.  These co-exist during testing:
 
 Once it’s time to swap in the new version, in most languages I
 could just switch the names, but for Haskell I have to change every
-definition.  This comes up a lot for me, in addition to the many
-other times I want to rename a function.
+definition.  This comes up a lot for me.  More generally, it arises
+anytime I want to rename a function.
 
 My solution is a “ditto mark”, `''`, which abbreviates the
 identifier above it if it starts the line.  So, in
@@ -365,11 +369,11 @@ import           Data.Set (Set)
 after the module name, which somewhat obviates this.)
 
 Meanwhile, qualification seems an unnecessary feature.  It is rare
-that one wants to use `as` _un_​qualified.  No other language I
+that one wants to use `as` _un_&#xfeff;qualified.  No other language I
 know of, including those Haskell-inspired, has any such keyword.
 For instance, in PureScript `as` in an import always means qualified.
 
-Haskell rather singularly optimizes its syntax for the rarest of cases.
+Haskell singularly optimizes its syntax for the rarest of cases.
 
 `hpre` extends and alters the import syntax with the following
 two rules:
@@ -378,7 +382,7 @@ two rules:
 separating specifiers with commas.  For instance `import Foo as A,
 as B` will import the module into both namespaces.
 
-2.  Any import with an `as` is automatically qualified.
+2.  An import with `as` is always qualified.
 
 Thus, using `hpre`, the above two lines can be written as simply
 
@@ -418,9 +422,9 @@ qualified.  For this reason, it is off by default, and is activated by
 putting `--+` on a line by itself, which causes processing of import
 statements from then on.
 
-In the future, I may drop this rule, and simply have `hpre` transform
-all imports, accepting that it is not fully compatible.  This will
-necessitate a 2.0 release.
+In the future, I may drop this condition, and simply have `hpre`
+transform all imports, accepting that it is not fully compatible.
+This will necessitate a 2.0 release.
 
 
 ##  Limitations and future work
@@ -446,7 +450,7 @@ Until the ticked numbers feature is removed, similar alignment problems
 could occur when `'` and `_` are removed from lines.
 
 The parsing is somewhat primitive; I don’t try to handle Haskell’s
-entire syntax.  As such, it’s surely possible to confuse it.  However,
+entire syntax.  As such, it’s possible to confuse it.  However,
 I have used `hpre` in several large and complex projects without
 problems.
 
