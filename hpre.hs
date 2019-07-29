@@ -5,6 +5,7 @@ import Control.Applicative
 import Data.List
 import Data.Maybe
 
+import Debug.Trace
 
 --  YMMV
 tabWidth = 3 :: Int
@@ -151,24 +152,28 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    nxt' <- spaceOut '|' nxt
    pure $ l : nxt' : dataBarsL ls'
 
-isUpper1 :: String -> Bool
-isUpper1 "" = False
-isUpper1 (c:s) = isUpper c
-
 imports :: [String] -> [String]
 imports [] = []
 imports (x:l') | x == "--+" = "" : loop l'
                | __         = x : imports l'
    where
    loop [] = []
-   loop (x:l) | "import " `isPrefixOf` x, x' <- dropWhile isSpace $ drop 6 x, isUpper1 x' =
-                  let (a, b) = span (\y -> case y of c:_ -> isSpace c; _ -> True) l
+   loop (x:l) | "import " `isPrefixOf` x
+               , x' <- dropWhile isSpace $ drop 6 x
+               , not $ "q" `isPrefixOf` x' =
+                  let (a, b) =
+                        span (\y -> case y of c:_ -> isSpace c; _ -> True) l
                   in doBlock (concat $ intersperse "\n" $ x' : a) : loop b
               | __ = x : loop l
-   doBlock b = go 0 "" rest where
-      (mod, rest) = break (\c -> c==',' || isSpace c) b
-      go p acc blk =
-         let (a, b) = break (\c -> c `elem` ",()") blk
+   doBlock blk = go 0 "" rest where
+      (mod, rest) =
+         case break (\c -> c==',' || isSpace c) blk of
+            (a, b) | '"':_ <- dropWhile isSpace a
+                     , (b1, b2) <- break (==' ') $ dropWhile isSpace b
+                        -> (a ++ " " ++ b1, b2)
+            pair -> pair
+      go p acc nx =
+         let (a, b) = break (\c -> c `elem` ",()") nx
              acc' = acc ++ a
          in case b of
             '(':b          -> go (p+1) (acc' ++ "(") b
