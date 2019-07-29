@@ -151,9 +151,44 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    nxt' <- spaceOut '|' nxt
    pure $ l : nxt' : dataBarsL ls'
 
+imark :: String
+imark = "--+"
+
+isUpper1 :: String -> Bool
+isUpper1 "" = False
+isUpper1 (c:s) = isUpper c
+
+imports :: [String] -> [String]
+imports [] = []
+imports (x:l') | x == imark = "" : loop l'
+               | __         = x : imports l'
+   where
+   loop [] = []
+   loop (x:l) | "import " `isPrefixOf` x, x' <- dropWhile isSpace $ drop 6 x, isUpper1 x' =
+                  let (a, b) = span (\y -> case y of c:_ -> isSpace c; _ -> True) l
+                  in doBlock (concat $ intersperse "\n" $ x' : a) : loop b
+              | __ = x : loop l
+   doBlock b = go 0 "" rest where
+      (mod, rest) = break (\c -> c==',' || isSpace c) b
+      go p acc blk =
+         let (a, b) = break (\c -> c `elem` ",()") blk
+             acc' = acc ++ a
+         in case b of
+            '(':b          -> go (p+1) (acc' ++ "(") b
+            ')':b | p > 0  -> go (p-1) (acc' ++ ")") b
+            ',':b | p == 0 ->
+               mkimport acc' ++ (if all isSpace b then "" else ";" ++ go 0 "" b)
+            c:b            -> go p (acc' ++ [c]) b
+            _              -> mkimport acc'
+      mkimport acc =
+         "import "
+            ++ (if "as" `isPrefixOf` dropWhile isSpace acc
+                  then "qualified " else "")
+            ++ mod ++ " " ++ acc
+
 process :: String -> String 
 process =
-   unlines . dataBarsL . commasL . commasR . dittoMarks .
+   unlines . imports . dataBarsL . commasL . commasR . dittoMarks .
    map (emptyGuard . tickedNums . untab) . lines
 
 main = do

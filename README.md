@@ -336,6 +336,93 @@ Some may find ditto marks unpalatable, but I’m quite pleased with
 how they have worked out in practice.
 
 
+##  Multiplex imports
+
+_This is a new, experimental feature I am still in the process of
+trying out._
+
+Haskell code is littered with pairs of lines such as this:
+
+```haskell
+import qualified Data.Map.Strict as Map
+import Data.Map.Strict (Map)
+```
+
+This is obnoxious both to write out and to read.
+
+In fact, the syntax of import statements is suboptimal in several ways.
+Even the word `qualified` is a bit ugly, being large and messing
+up alignment.  Some codebases resort to using spaces to line up
+module names:
+
+```haskell
+import           Control.Monad
+import qualified Data.Set as S
+import           Data.Set (Set)
+```
+
+(A future language extension will allow `qualified` to be written
+after the module name, which somewhat obviates this.)
+
+Meanwhile, qualification seems an unnecessary feature.  It is rare
+that one wants to use `as` _un_qualified.  Most other languages,
+including those Haskell-inspired, do not have any analogous keyword.
+For instance, in PureScript `as` in an import always means qualified.
+
+Haskell is thus rather alone in optimizing the syntax for the rarest
+of cases.
+
+`hpre` alters and extends the import syntax with the following
+two rules:
+
+1.  A module may be imported multiple times in one statement, by
+separating specifiers with commas.  For instance `import Foo as A,
+as B` will import it into both namespaces.
+
+2.  Any import with an `as` is automatically qualified.
+
+Thus, using `hpre`, the above two lines can be written as simply
+
+```haskell
+import Data.Map.Strict (Map), as Map
+```
+
+Each comma-separated specifier is an optional `as` clause followed by
+any of the usual: a list of symbols, a `hiding` clause, or nothing.
+Examples:
+
+```haskell
+import Data.List hiding (group), as List
+import Data.List.NonEmpty (group), as NE
+import Data.ByteString as B hiding (pack)
+import Data.ByteString.Char8 as B (pack)
+import Data.ByteString.Lazy (fromChunks), as B (toStrict), as BL
+```
+
+`hpre` expands each of these into multiple `import` statements.
+
+The “unqualified as” import can be emulated with this:
+
+```haskell
+import Control.Exception, as Exc
+```
+
+That is, this will import all symbols from the module both unqualified
+and with `Exc.`.  (A _trailing_ comma, however, is ignored.)
+
+If an import is explicitly `qualified`, `hpre` leaves it unchanged.
+
+Unlike all other `hpre` features, multiplex imports can change the
+meaning of valid Haskell programs, since `as` imports are now all
+qualified.  As such, currently it is off by default, and is activated
+by putting `--+` on a line by itself, which causes processing of
+import statements from then on.
+
+In the future, I may drop this rule, and simply have `hpre` transform
+all imports, accepting that it is not fully compatible.  This will
+necessitate a 2.0 release.
+
+
 ##  Limitations and future work
 
 These extensions can in principle interfere with alignment.  I try
@@ -363,17 +450,8 @@ entire syntax.  As such, it’s surely possible to confuse it.  However,
 I have used `hpre` in several large and complex projects without
 problems.
 
-###  Import lists
-
-I get annoyed having to repeatedly type out the likes of this:
-
-```haskell
-import qualified Data.Map.Strict as Map
-import Data.Map.Strict (Map)
-```
-
-There is also the general redundancy of writing `import` over and over.
-I have some ideas for “import blocks”.
+All features I seriously considered for `hpre` have now been
+implemented, so no additions are planned any time soon.
 
 
 ##  Installation and use
