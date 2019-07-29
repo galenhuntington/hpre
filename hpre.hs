@@ -151,16 +151,13 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    nxt' <- spaceOut '|' nxt
    pure $ l : nxt' : dataBarsL ls'
 
-imark :: String
-imark = "--+"
-
 isUpper1 :: String -> Bool
 isUpper1 "" = False
 isUpper1 (c:s) = isUpper c
 
 imports :: [String] -> [String]
 imports [] = []
-imports (x:l') | x == imark = "" : loop l'
+imports (x:l') | x == "--+" = "" : loop l'
                | __         = x : imports l'
    where
    loop [] = []
