@@ -157,9 +157,12 @@ process =
    map (emptyGuard . tickedNums . untab) . lines
 
 main = do
-   [nm, inf, outf] <- getArgs
-   file <- readFile inf
-   writeFile outf $
-      "{-# LINE 1 \"" ++ nm ++ "\" #-}\n" ++
-      process file
+   args <- getArgs
+   case args of
+      [nm, inf, outf] -> do
+         file <- readFile inf
+         writeFile outf
+            $ "{-# LINE 1 \"" ++ nm ++ "\" #-}\n" ++ process file
+      [] -> interact process
+      _  -> error "Usage: hpre [name infile outfile]"
 
