@@ -348,21 +348,21 @@ trying out._
 Haskell code is littered with pairs of lines such as this:
 
 ```haskell
-import qualified Data.Map.Strict as Map
-import Data.Map.Strict (Map)
+   import qualified Data.Map.Strict as Map
+   import Data.Map.Strict (Map)
 ```
 
 This is obnoxious both to write out and to read.
 
 In fact, the syntax of import statements is suboptimal in several ways.
-Even the word `qualified` is a bit ugly, being large and messing
-up alignment.  Some codebases resort to using spaces to line up
-module names:
+Even the word `qualified` is a bit ugly, being large and messing up
+alignment, so that some codebases conventionally use spaces to line
+up names:
 
 ```haskell
-import           Control.Monad
-import qualified Data.Set as S
-import           Data.Set (Set)
+   import           Control.Monad
+   import qualified Data.Set as S
+   import           Data.Set (Set)
 ```
 
 (A future language extension will allow `qualified` to be written
@@ -387,7 +387,7 @@ as B` will import the module into both namespaces.
 Thus, using `hpre`, the above two lines can be written as simply
 
 ```haskell
-import Data.Map.Strict (Map), as Map
+   import Data.Map.Strict (Map), as Map
 ```
 
 Each comma-separated specifier is an optional `as` clause followed by
@@ -395,11 +395,11 @@ any of the usual: a list of symbols, a `hiding` clause, or nothing.
 Examples:
 
 ```haskell
-import Data.List hiding (group), as List
-import Data.List.NonEmpty (group), as NE
-import Data.ByteString as B hiding (pack)
-import Data.ByteString.Char8 as B (pack)
-import Data.ByteString.Lazy (fromChunks), as B (toStrict), as BL
+   import Data.List hiding (group), as List
+   import Data.List.NonEmpty (group), as NE
+   import Data.ByteString as B hiding (pack)
+   import Data.ByteString.Char8 as B (pack)
+   import Data.ByteString.Lazy (fromChunks), as B (toStrict), as BL
 ```
 
 `hpre` expands each of these into multiple `import` statements.
@@ -416,11 +416,36 @@ and with `Exc.`.  (A _trailing_ comma, however, is ignored.)
 If an import is explicitly `qualified`, it is left unchanged, although
 eventually I may make this an error.
 
+In Haskell, modules can be re-exported by adding `module X` to the
+export list.  This exports symbols only if they are in scope _both_
+unqualified and qualified as _X_.  A common idiom is to use one module
+name for all exported symbols, e.g.,
+
+```haskell
+   module Foo (Foo(..), module Export) where
+   import Control.Monad as Export
+   import qualified Data.Text as T
+   import Data.Text as Export (Text, pack, unpack)
+```
+
+With multiplex imports, any import can be marked for re-export simply
+and consistently by adding (in this example) `, as Export`:
+
+```haskell
+   module Foo (Foo(..), module Export) where
+   import Control.Monad, as Export
+   import Data.Text (Text, pack, unpack), as T, as Export
+```
+
+An extension I’m considering is having `(..)` represent the
+whole module, as in `import Foo (..)`, to avoid the odd notation of
+separating off an empty specifier with a comma.
+
 Unlike all other `hpre` features, multiplex imports can change the
-meaning of valid Haskell programs, since `as` imports are now all
-qualified.  For this reason, it is off by default, and is activated by
-putting `--+` on a line by itself, which causes processing of import
-statements from then on.
+meaning of valid Haskell programs, since `as` imports all become
+qualified.  For this reason, it is off by default, and is activated
+by putting `--+` on a line by itself, which causes import statements
+to be processed from then on.
 
 In the future, I may drop this condition, and simply have `hpre`
 transform all imports, accepting that it is not fully compatible.
@@ -441,10 +466,10 @@ but one should be aware of the possibility.  As an example,
                              f x = x + 1
 ```
 
-will fail to parse because the `f`s will not align when `True` is
-inserted.  However, I personally never rely on alignment in this way,
-and this would be highly unusual in any case; the condition being
-one character wider would result in no problem.
+will fail to parse because the `f`s will not align when `True`
+is inserted.  However, I personally almost never use alignment in
+this way, and anyway this is a marginal case; if the condition were
+one character wider there would be no problem.
 
 Until the ticked numbers feature is removed, similar alignment problems
 could occur when `'` and `_` are removed from lines.
