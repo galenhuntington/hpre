@@ -224,7 +224,7 @@ a default case.
 `hpre` adds support for empty guards.  It checks for a `|` followed by
 whitespace and an `=` or `->` on the same line, and writes in a literal
 `True`.  This doesn’t give the full power that a compiler-supported
-empty guard would, but it works quite well in practice.
+empty guard would, but it works well in practice.
 
 
 ##  Ditto marks
@@ -373,7 +373,7 @@ that one wants to use `as` _un_&#xfeff;qualified.  No other language I
 know of, including those Haskell-inspired, has any such keyword.
 For instance, in PureScript `as` in an import always means qualified.
 
-Haskell singularly optimizes its syntax for the rarest of cases.
+Haskell singularly optimizes its syntax for the least common case.
 
 `hpre` extends and alters the import syntax with the following
 two rules:
