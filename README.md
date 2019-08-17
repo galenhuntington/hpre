@@ -175,7 +175,7 @@ is to use `otherwise`.
          | otherwise = n * fac (n-1)
 
    ... case a `divMod` b of
-          (q, r) | flag      -> r
+          (q, r) | odd r     -> r
                  | otherwise -> q + r
 ```
 
@@ -404,7 +404,7 @@ Examples:
 
 `hpre` expands each of these into multiple `import` statements.
 
-The “unqualified as” import can be emulated with this:
+The “unqualified as” import can be emulated as follows:
 
 ```haskell
 import Control.Exception, as Exc
