@@ -10,6 +10,7 @@ import Debug.Trace
 --  YMMV
 tabWidth = 3 :: Int
 
+{-# INLINE __ #-}
 __ = True  -- second-best
 
 --  Yank up to end of quote.

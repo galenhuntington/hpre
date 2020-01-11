@@ -4,7 +4,7 @@ productivity without harming readability.
 
 I have been using Haskell since 2005 and am largely self-taught.
 As such, I developed my own habits and conventions, and found a few
-aspects of the language that irked me.  I have slowly developed `hpre`
+aspects of the language inadequate.  I developed what is now `hpre`
 (formerly `gghc`) over the years to address these.
 
 Here are the features, along with their rationales:
@@ -12,8 +12,9 @@ Here are the features, along with their rationales:
 
 ##  Ticked numbers
 
-_An extension `NumericUnderscores` landed in GHC 8.6 that meets this
-need; as such, I will eventually remove this feature._
+_An extension `NumericUnderscores` landed in GHC 8.6 that meets
+this need; as such, this feature is deprecated and will eventually
+be removed._
 
 Large integer literals can be hard to read off.  Many languages
 provide native syntax for spacing them out.  For example, Perl allows
@@ -66,22 +67,21 @@ The Haskell community’s answer to this has been to adopt
 
 The idea being that you can add `, itemFour` easily.
 
-However, this is not really satisfactory.  For one, I find it ugly;
-commas were not meant to be dangled like this, but to sit comfortably
-after a word.  Nevertheless, there is an argument that code is easier
-to scan with delimiters at the start of lines, and the community has
-largely moved to this style, so I have been reluctantly adopting it.
+However, this is not really satisfactory.  For one, I personally
+find it unsightly; commas were meant to sit comfortably after a word.
+Nevertheless, there is an argument that code is easier to scan with
+delimiters at the start of lines, and the community has largely
+settled on this style, so I have been adopting it.
 
 But the more important point is that it doesn’t fix the problem.
-Instead of the last item being exceptional, now the first is.
-One could argue that it is more common to add to the end of a list
-than the beginning.  But one might want to move `itemOne` down,
-or add before it, or remove it.
+Instead of the last item being exceptional, now the first is.  Perhaps
+it is more common to add to the end of a list than the beginning, but
+one might want to move `itemOne` down, or add before it, or remove it.
 
 Many other languages sensibly allow a _trailing comma_ in such lists,
 after the last item.  Java, Python, Perl, Ruby, and modern Javascript
-(ES5) all do.  Haskell even allows it in import and export lists.
-In Rust it is the recommended style.  It may indeed be better design
+(ES5) all do.  In Rust it is the recommended style.  Haskell even
+allows it in import and export lists.  It may indeed be better design
 for the comma to be a (perhaps optionally omitted) terminator rather
 than a separator.
 
@@ -137,11 +137,13 @@ declarations:
       | Bar
 ```
 
-Trailing bars are not currently supported.
+Trailing bars are not supported at all, and I currently have no plans
+to add them.
 
-There are other places where extra delimiters might be handy, such
-as pattern guards and language extension lists, but these are rare
-enough cases that I have no immediate plans to add them.
+There are other places where extra delimiters might be handy, such as
+pattern guards and language extension lists, but these are much less
+common and thus less troublesome, so I’m not currently planning to
+add them.
 
 
 ##  Tab expansion
@@ -211,7 +213,7 @@ of conditions can be zero.
 A practical application is that Haskell compilers should and do check
 for incomplete definitions and cases.  To this end, `otherwise` is
 special-cased into GHC as something known to always be true, which is
-ugly itself.  Indeed, `elsewise = True; x | elsewise = ()` will issue
+itself hacky.  Indeed, `elsewise = True; x | elsewise = ()` will issue
 a warning with `-Wincomplete-patterns`.  If the compiler accepted zero
 conditions, it could know _a priori_ that the guards are exhaustive.
 
@@ -355,7 +357,7 @@ Haskell code is littered with pairs of lines such as this:
 This is obnoxious both to write out and to read.
 
 In fact, the syntax of import statements is suboptimal in several ways.
-Even the word `qualified` is a bit ugly, being large and messing up
+Even the word `qualified` is a bit ugly, being long and messing up
 alignment, so that some codebases conventionally use spaces to line
 up names:
 
@@ -365,8 +367,8 @@ up names:
    import           Data.Set (Set)
 ```
 
-(A future language extension will allow `qualified` to be written
-after the module name, which somewhat obviates this.)
+(A language extension is in the works to allow `qualified` to be
+written after the module name, which somewhat obviates this.)
 
 Meanwhile, qualification seems an unnecessary feature.  It is rare
 that one wants to use `as` _un_&#xfeff;qualified.  No other language I
@@ -458,7 +460,7 @@ These extensions can in principle interfere with alignment.  I try
 to minimize this effect—for example, the `True` in empty guards
 replaces an equal number of spaces when possible, and `COLUMN` pragmas
 are used with ditto expansion—and I almost never encounter problems,
-but one should be aware of the possibility.  As an example,
+but it can happen.  As an example,
 
 ```haskell
      bad a b | b = 1
