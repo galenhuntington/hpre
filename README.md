@@ -4,7 +4,7 @@ productivity without harming readability.
 
 I have been using Haskell since 2005 and am largely self-taught.
 As such, I developed my own habits and conventions, and found a few
-aspects of the language inadequate.  I developed what is now `hpre`
+aspects of the language unsatisfactory.  I developed what is now `hpre`
 (formerly `gghc`) over the years to address these.
 
 Here are the features, along with their rationales:
@@ -40,10 +40,10 @@ conflict with either notation.
 _An extension `ExtraCommas` is being considered that may eventually
 make this mostly obsolete._
 
-That the last item in a comma-separated list does not take a comma is
-a recurring nuisance.  It is easy when adding to the list, or moving
-entries around, to fail to attend to this exception.  Furthermore,
-code diffs look like this:
+That a comma is not allowed after the last item in a comma-separated
+list is a recurring nuisance.  It is easy to fail to attend to
+this exception when adding to the list, or moving entries around.
+Furthermore, code diffs can triple in size:
 
 ```diff
 -    itemSeven
@@ -71,7 +71,7 @@ However, this is not really satisfactory.  For one, I personally
 find it unsightly; commas were meant to sit comfortably after a word.
 Nevertheless, there is an argument that code is easier to scan with
 delimiters at the start of lines, and the community has largely
-settled on this style, so I have been adopting it.
+settled on this style, so I have been slowly adopting it.
 
 But the more important point is that it doesn’t fix the problem.
 Instead of the last item being exceptional, now the first is.  Perhaps
@@ -137,22 +137,22 @@ declarations:
       | Bar
 ```
 
-Trailing bars are not supported at all, and I currently have no plans
-to add them.
-
-There are other places where extra delimiters might be handy, such as
-pattern guards and language extension lists, but these are much less
-common and thus less troublesome, so I’m not currently planning to
+Trailing bars are not supported, and I currently have no plans to
 add them.
+
+There are other places where extra delimiters might be handy, such
+as pattern guards and language extension lists, but these are much
+less common and thus less troublesome, so as of now I have no plans
+to support those either.
 
 
 ##  Tab expansion
 
-The tab versus spaces debate is an old one, and still unresolved
-(e.g., Python has settled on spaces, Go on tabs).  The Haskell
-community today firmly endorses spaces, but I remain ambivalent.
-GHC now warns on tabs (although `-fno-warn-tabs` can disable that),
-but interprets them as eight-space jumps.
+The tab versus spaces debate is an old one, and still unresolved (e.g.,
+Python has settled on spaces, Go on tabs).  The Haskell community
+today endorses spaces, but I remain ambivalent.  GHC now warns on tabs
+(although `-fno-warn-tabs` can disable that), but interprets them as
+eight-space jumps.
 
 Eight spaces is a lot, and most prefer an indentation of at most four.
 So, code with tabs will be mis-aligned by the Haskell parser, which
@@ -196,10 +196,10 @@ nicer solution, where the `otherwise` is optional.  Imagine this:
          |       = n * fac (n-1)
 ```
 
-To me this is much more pleasant and cleaner.  (NB:  In Clean the
-second `|` is actually omitted, but I don’t copy that.)
+To me this is much more pleasant and natural.  (NB:  In Clean the
+second `|` is actually omitted, but I don’t follow that.)
 
-And the idea fits nicely with existing syntax.  Consider the “pattern
+And the idea fits nicely with existing syntax.  There is a “pattern
 guards” extension, standard in Haskell2010, which allows multiple
 conditions in a guard:
 
@@ -207,7 +207,7 @@ conditions in a guard:
    bar x | not (null x), Just y <- lookup 1 x, y /= 3 = ...
 ```
 
-An empty guard is a natural generalization of this, where the number
+An empty guard is a small generalization of this, where the number
 of conditions can be zero.
 
 A practical application is that Haskell compilers should and do check
@@ -266,10 +266,10 @@ but will error out at runtime if this case arises.  If it’s an uncommon
 case, this might suddenly occur in production weeks later and bring
 down your app.
 
-This syntax appears to be motivated by mathematical notation, but
-mathematicians tend to use short identifiers (such as _f_ or **fib**),
-which are less troublesome, and of course write for humans, who can
-correct for errors.
+This syntax appears to be motivated by mathematical notation.
+But mathematicians tend to use short identifiers (such as _f_ or
+**fib**), which are less troublesome, and of course write for humans,
+who can correct for errors.
 
 Next, a major motivation for DRY is the ease of maintenance and making
 changes.  An example is developing an alternative implementation of
@@ -291,8 +291,8 @@ some function.  These co-exist during testing:
 
 Once it’s time to swap in the new version, in most languages I
 could just switch the names, but for Haskell I have to change every
-definition.  This comes up a lot for me.  More generally, it arises
-anytime I want to rename a function.
+definition.  This comes up frequently for me.  More generally, it
+arises anytime I want to rename a function.
 
 My solution is a “ditto mark”, `''`, which abbreviates the
 identifier above it if it starts the line.  So, in
@@ -344,8 +344,8 @@ how they have worked out in practice.
 
 ##  Multiplex imports
 
-_This is a new, experimental feature I am still in the process of
-trying out._
+_This is an experimental feature I am still in the process of trying
+out._
 
 Haskell code is littered with pairs of lines such as this:
 
