@@ -126,11 +126,14 @@ spaceOut c s =
       (sp, c' : s') | c == c' -> Just $ sp ++ ' ' : s'
       _                       -> Nothing
 
+spanCommentLines :: [String] -> ([String], [String])
+spanCommentLines = span (null . stripSpace . decomment)
+
 commasR :: [String] -> [String]
 commasR []     = []
 commasR (l:ls) = (: commasR ls) $ fromMaybe l $ do
    ',' : l' <- pure $ dropWhile isSpace $ reverse $ decomment l
-   nxt : _  <- pure $ dropWhile (null . stripSpace . decomment) ls
+   nxt : _  <- pure $ snd $ spanCommentLines ls
    c : _    <- pure $ dropWhile isSpace nxt
    guard $ c `elem` "])}"
    pure $ reverse l'
@@ -140,18 +143,20 @@ commasL []     = []
 commasL (l:ls) = fromMaybe (l : commasL ls) $ do
    c : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
    guard $ c `elem` "{(["
-   nxt : ls' <- pure ls
+   let (comms, rest) = spanCommentLines ls
+   nxt : ls' <- pure rest
    nxt' <- spaceOut ',' nxt
-   pure $ l : nxt' : commasL ls'
+   pure $ l : comms ++ nxt' : commasL ls'
 
 dataBarsL :: [String] -> [String]
 dataBarsL []    = []
 dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    guard $ "data " `isPrefixOf` l
    '=' : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
-   nxt : ls' <- pure ls
+   let (comms, rest) = spanCommentLines ls
+   nxt : ls' <- pure rest
    nxt' <- spaceOut '|' nxt
-   pure $ l : nxt' : dataBarsL ls'
+   pure $ l : comms ++ nxt' : dataBarsL ls'
 
 imports :: [String] -> [String]
 imports [] = []
