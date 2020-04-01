@@ -128,8 +128,7 @@ _Leading_ commas are similarly supported, so these can be written:
       } deriving (Eq, Show)
 ```
 
-Finally, there is experimental support for leading _bars_ in `data`
-declarations:
+In addition, `hpre` supports leading _bars_ in `data` declarations:
 
 ```haskell
    data Foobar =
@@ -367,8 +366,9 @@ up names:
    import           Data.Set (Set)
 ```
 
-(A language extension is in the works to allow `qualified` to be
-written after the module name, which somewhat obviates this.)
+(A language extension `ImportQualifiedPost` is available as of GHC
+8.10 that moves `qualified` after the module name, which somewhat
+obviates this.)
 
 Meanwhile, qualification seems an unnecessary feature.  It is rare
 that one wants to use `as` _un_&#xfeff;qualified.  No other language I
