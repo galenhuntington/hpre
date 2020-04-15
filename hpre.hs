@@ -13,6 +13,9 @@ tabWidth = 3 :: Int
 {-# INLINE __ #-}
 __ = True  -- second-best
 
+warn :: String -> a -> a
+warn = trace . ("Warning: " ++)
+
 --  Yank up to end of quote.
 --  TODO multiline quote support
 skipQuote :: String -> (String, String)
@@ -166,11 +169,14 @@ imports (x:l') | x == "--+" = "" : loop l'
    loop [] = []
    loop (x:l) | "import " `isPrefixOf` x
                , x' <- dropWhile isSpace $ drop 6 x
-               , not $ "q" `isPrefixOf` x' =
-                  let (a, b) =
-                        span (\y -> case y of c:_ -> isSpace c; _ -> True) l
-                  in doBlock (concat $ intersperse "\n" $ x' : a) : loop b
-              | __ = x : loop l
+               = if "qualified" `isPrefixOf` x'
+                  then warn "Use of qualified in multiplex import." $ continue
+                  else
+                     let (a, b) =
+                           span (\y -> case y of c:_ -> isSpace c; _ -> True) l
+                     in doBlock (concat $ intersperse "\n" $ x' : a) : loop b
+              | __ = continue
+              where continue = x : loop l
    doBlock blk = go 0 "" rest where
       (mod, rest) =
          case break (\c -> c==',' || isSpace c) blk of
