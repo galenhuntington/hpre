@@ -195,8 +195,8 @@ nicer solution, where the `otherwise` is optional.  Imagine this:
          |       = n * fac (n-1)
 ```
 
-To me this is much more pleasant and natural.  (NB:  In Clean the
-second `|` is actually omitted, but I don’t follow that.)
+To me this is much more pleasant and natural.  (In Clean the second
+`|` is actually omitted, but I don’t follow that.)
 
 And the idea fits nicely with existing syntax.  There is a “pattern
 guards” extension, standard in Haskell2010, which allows multiple

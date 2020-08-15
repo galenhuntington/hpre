@@ -44,10 +44,11 @@ tickedNums :: String -> String
 tickedNums []      = []
 tickedNums l@(x:m)
    | isDigit x =
-      let (p1, p2) = span (\y -> isDigit y || isTick y) l in
-      filter (not.isTick) p1
-         ++ (reverse $ takeWhile isTick $ reverse p1) -- prob not needed
-         ++ tickedNums p2
+      let (p1, p2) = span (\y -> isDigit y || isTick y) l
+          p1' = filter (not.isTick) p1
+                  ++ (reverse $ takeWhile isTick $ reverse p1) -- prob not needed
+      in (if p1/=p1' then warn "Ticked numbers are deprecated." else id)
+            $ p1' ++ tickedNums p2
    | isNameChar x =
       let (nm, rest) = span isNameChar l
       in nm ++ tickedNums rest
