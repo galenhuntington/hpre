@@ -37,8 +37,8 @@ conflict with either notation.
 
 ##  Trailing commas and the like
 
-_An extension `ExtraCommas` is being considered that may eventually
-make this mostly obsolete._
+_An extension `ExtraCommas` has been proposed that would replace some
+of these features, but it has been stalled for a while._
 
 That a comma is not allowed after the last item in a comma-separated
 list is a recurring nuisance.  It is easy to fail to attend to
