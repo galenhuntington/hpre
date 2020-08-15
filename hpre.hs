@@ -21,11 +21,11 @@ warn = trace . ("Warning: " ++)
 skipQuote :: String -> (String, String)
 skipQuote s = go "" s where
    go q []            = (q, [])
-   go q ('\\':[])     = (q++'\\':[], [])
+   go q "\\"          = (q++['\\'], [])
    go q ('"':s)       = (q++"\"", s)
    go q ('\\':'\\':s) = go (q++"\\\\") s
    go q ('\\':'"':s)  = go (q++"\\\"") s
-   go q (c:s)         = go (q++c:[]) s
+   go q (c:s)         = go (q++[c]) s
 
 untab :: String -> String
 untab = go (0::Int) where
@@ -46,7 +46,7 @@ tickedNums l@(x:m)
    | isDigit x =
       let (p1, p2) = span (\y -> isDigit y || isTick y) l
           p1' = filter (not.isTick) p1
-                  ++ (reverse $ takeWhile isTick $ reverse p1) -- prob not needed
+                  ++ reverse (takeWhile isTick $ reverse p1) -- prob not needed
       in (if p1/=p1' then warn "Ticked numbers are deprecated." else id)
             $ p1' ++ tickedNums p2
    | isNameChar x =
@@ -101,7 +101,7 @@ dittoM s = (sp1 ++) <$>
       indent = length sp1
       doDitto :: Int -> String -> State DittoHist String
       doDitto wid rest' = do
-         valm <- lookup indent <$> get
+         valm <- gets $ lookup indent
          pure $ case valm of
             Just val ->
                let (sp2, rest'') = span isSpace rest' in
@@ -171,13 +171,13 @@ imports (x:l') | x == "--+" = "" : loop l'
    loop (x:l) | "import " `isPrefixOf` x
                , x' <- dropWhile isSpace $ drop 6 x
                = if "qualified" `isPrefixOf` x'
-                  then warn "Use of qualified in multiplex import." $ continue
+                  then warn "Use of qualified in multiplex import." skip
                   else
                      let (a, b) =
                            span (\y -> case y of c:_ -> isSpace c; _ -> True) l
-                     in doBlock (concat $ intersperse "\n" $ x' : a) : loop b
-              | __ = continue
-              where continue = x : loop l
+                     in doBlock (intercalate "\n" $ x' : a) : loop b
+              | __ = skip
+              where skip = x : loop l
    doBlock blk = go 0 "" rest where
       (mod, rest) =
          case break (\c -> c==',' || isSpace c) blk of
@@ -186,7 +186,7 @@ imports (x:l') | x == "--+" = "" : loop l'
                         -> (a ++ " " ++ b1, b2)
             pair -> pair
       go p acc nx =
-         let (a, b) = break (\c -> c `elem` ",()") nx
+         let (a, b) = break (`elem` ",()") nx
              acc' = acc ++ a
          in case b of
             '(':b          -> go (p+1) (acc' ++ "(") b
@@ -203,8 +203,8 @@ imports (x:l') | x == "--+" = "" : loop l'
 
 process :: String -> String 
 process =
-   unlines . imports . dataBarsL . commasL . commasR . dittoMarks .
-   map (emptyGuard . tickedNums . untab) . lines
+   unlines . imports . dataBarsL . commasL . commasR . dittoMarks
+      . map (emptyGuard . tickedNums . untab) . lines
 
 main = do
    args <- getArgs
