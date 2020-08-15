@@ -222,10 +222,10 @@ is needed.  If, say, for some reason you didn’t bring all of the
 Prelude into scope, you might not have the syntactic ability to write
 a default case.
 
-`hpre` adds support for empty guards.  It checks for a `|` followed by
-whitespace and an `=` or `->` on the same line, and writes in a literal
-`True`.  This doesn’t give the full power that a compiler-supported
-empty guard would, but it works well in practice.
+`hpre` adds support for empty guards.  It checks for a `|` followed
+by whitespace and an `=` or `->` (or `→`) on the same line, and
+writes in a literal `True`.  This doesn’t give the full power that
+a compiler-supported empty guard would, but it works well in practice.
 
 
 ##  Ditto marks
