@@ -79,11 +79,11 @@ it is more common to add to the end of a list than the beginning, but
 one might want to move `itemOne` down, or add before it, or remove it.
 
 Many other languages sensibly allow a _trailing comma_ in such lists,
-after the last item.  Java, Python, Perl, Ruby, and modern Javascript
-(ES5) all do.  In Rust it is the recommended style.  Haskell even
-allows it in import and export lists.  It may indeed be better design
-for the comma to be a (perhaps optionally omitted) terminator rather
-than a separator.
+after the last item.  Java, Python, Perl, Ruby, and modern JavaScript
+all do.  In Rust it is the recommended style.  Haskell even allows
+it in import and export lists.  It may indeed be better design for
+the comma to be a (perhaps optionally omitted) terminator rather than
+a separator.
 
 `hpre` thus supports this for items split across lines, which is the
 primary use case.  You can write
