@@ -343,9 +343,6 @@ how they have worked out in practice.
 
 ##  Multiplex imports
 
-_This is an experimental feature I am still in the process of trying
-out._
-
 Haskell code is littered with pairs of lines such as this:
 
 ```haskell
@@ -415,8 +412,8 @@ import Control.Exception, as Exc
 That is, this will import all symbols from the module both unqualified
 and with `Exc.`.  (A _trailing_ comma, however, is ignored.)
 
-If an import is explicitly `qualified`, it is left unchanged, although
-eventually I may make this an error.
+If an import is explicitly `qualified`, a warning is output, and it
+is left unchanged.  I may eventually make this an error.
 
 In Haskell, modules can be re-exported by adding `module X` to the
 export list.  This exports symbols only if they are in scope _both_
@@ -449,9 +446,9 @@ qualified.  For this reason, it is off by default, and is activated
 by putting `--+` on a line by itself, which causes import statements
 to be processed from then on.
 
-In the future, I may drop this condition, and simply have `hpre`
-transform all imports, accepting that it is not fully compatible.
-This will necessitate a 2.0 release.
+While having the feature on all the time is worth considering in say
+a (breaking) 2.0 release, my inclination is to keep this buffer so
+`hpre` is always “safe” to use.
 
 
 ##  Limitations and future work
