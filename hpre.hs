@@ -39,7 +39,8 @@ isNameChar c = isAlphaNum c || c=='\'' || c=='_'
 --  Allow "ticks" or "underscores" as digit separators.
 --  That is, not settling on one proposal yet.
 --  With NumericUnderscores an accepted extension, this is deprecated.
---  It should be removed eventually, as it can interfere with alignment.
+--  It should be removed eventually, as it can interfere with alignment
+--  (and that isn't worth fixing since deprecated).
 tickedNums :: String -> String
 tickedNums []      = []
 tickedNums l@(x:m)
@@ -163,10 +164,7 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    pure $ l : comms ++ nxt' : dataBarsL ls'
 
 imports :: [String] -> [String]
-imports [] = []
-imports (x:l') | x == "--+" = "" : loop l'
-               | __         = x : imports l'
-   where
+imports l = let (a, b) = break (=="--+") l in a ++ loop (drop 1 b) where
    loop [] = []
    loop (x:l) | "import " `isPrefixOf` x
                , x' <- dropWhile isSpace $ drop 6 x
