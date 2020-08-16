@@ -173,10 +173,10 @@ imports l = let (a, b) = break (=="--+") l in a ++ loop (drop 1 b) where
                   else
                      let (a, b) =
                            span (\y -> case y of c:_ -> isSpace c; _ -> True) l
-                     in doBlock (intercalate "\n" $ x' : a) : loop b
+                     in doImport (intercalate "\n" $ x' : a) : loop b
               | __ = skip
               where skip = x : loop l
-   doBlock blk = go 0 "" rest where
+   doImport blk = go 0 "" rest where
       (mod, rest) =
          case break (\c -> c==',' || isSpace c) blk of
             (a, b) | '"':_ <- dropWhile isSpace a
@@ -190,10 +190,10 @@ imports l = let (a, b) = break (=="--+") l in a ++ loop (drop 1 b) where
             '(':b          -> go (p+1) (acc' ++ "(") b
             ')':b | p > 0  -> go (p-1) (acc' ++ ")") b
             ',':b | p == 0 ->
-               mkimport acc' ++ (if all isSpace b then "" else ";" ++ go 0 "" b)
+               render acc' ++ (if all isSpace b then "" else ";" ++ go 0 "" b)
             c:b            -> go p (acc' ++ [c]) b
-            _              -> mkimport acc'
-      mkimport acc =
+            _              -> render acc'
+      render acc =
          "import "
             ++ (if "as" `isPrefixOf` dropWhile isSpace acc
                   then "qualified " else "")
