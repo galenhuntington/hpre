@@ -343,7 +343,7 @@ how they have worked out in practice.
 
 ##  Multiplex imports
 
-Haskell code is littered with pairs of lines such as this:
+Haskell code in the wild is littered with pairs of lines such as this:
 
 ```haskell
    import qualified Data.Map.Strict as Map
