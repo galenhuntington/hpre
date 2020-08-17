@@ -163,7 +163,7 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    pure $ l : comms ++ nxt' : dataBarsL ls'
 
 imports :: [String] -> [String]
-imports xs = let (a, b) = break (=="--+") xs in a ++ loop (drop 1 b) where
+imports xs = let (a, b) = break (=="--+") xs in a ++ "" : loop (drop 1 b) where
    loop (x:l) | "import " `isPrefixOf` x
                , x' <- dropWhile isSpace $ drop 6 x
                = if "qualified" `isPrefixOf` x'
