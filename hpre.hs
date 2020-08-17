@@ -1,7 +1,6 @@
 import System.Environment
 import Data.Char
 import Control.Monad.State
-import Control.Applicative
 import Data.List
 import Data.Maybe
 
@@ -19,7 +18,7 @@ warn = trace . ("Warning: " ++)
 --  Yank up to end of quote.
 --  TODO multiline quote support
 skipQuote :: String -> (String, String)
-skipQuote s = go "" s where
+skipQuote = go "" where
    go q []            = (q, [])
    go q "\\"          = (q++['\\'], [])
    go q ('"':s)       = (q++"\"", s)
@@ -42,7 +41,6 @@ isNameChar c = isAlphaNum c || c=='\'' || c=='_'
 --  It should be removed eventually, as it can interfere with alignment
 --  (and that isn't worth fixing since deprecated).
 tickedNums :: String -> String
-tickedNums []      = []
 tickedNums l@(x:m)
    | isDigit x =
       let (p1, p2) = span (\y -> isDigit y || isTick y) l
@@ -59,6 +57,7 @@ tickedNums l@(x:m)
    | __        = x : tickedNums m
   where
    isTick c = c == '\'' || c == '_'
+tickedNums _       = []
 
 --  Empty guards are filled in with True.
 --  This was formerly monadic and could perhaps be simplified.
@@ -164,8 +163,7 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    pure $ l : comms ++ nxt' : dataBarsL ls'
 
 imports :: [String] -> [String]
-imports l = let (a, b) = break (=="--+") l in a ++ loop (drop 1 b) where
-   loop [] = []
+imports xs = let (a, b) = break (=="--+") xs in a ++ loop (drop 1 b) where
    loop (x:l) | "import " `isPrefixOf` x
                , x' <- dropWhile isSpace $ drop 6 x
                = if "qualified" `isPrefixOf` x'
@@ -176,17 +174,19 @@ imports l = let (a, b) = break (=="--+") l in a ++ loop (drop 1 b) where
                      in doImport (intercalate "\n" $ x' : a) : loop b
               | __ = skip
               where skip = x : loop l
+   loop _ = []
    doImport blk = go 0 "" rest where
-      (mod, rest) =
+      (name, rest) =
          case break (\c -> c==',' || isSpace c) blk of
             (a, b) | '"':_ <- dropWhile isSpace a
                      , (b1, b2) <- break (==' ') $ dropWhile isSpace b
                         -> (a ++ " " ++ b1, b2)
             pair -> pair
+      go :: Int -> String -> String -> String
       go p acc nx =
-         let (a, b) = break (`elem` ",()") nx
-             acc' = acc ++ a
-         in case b of
+         let (nx1, nx2) = break (`elem` ",()") nx
+             acc' = acc ++ nx1
+         in case nx2 of
             '(':b          -> go (p+1) (acc' ++ "(") b
             ')':b | p > 0  -> go (p-1) (acc' ++ ")") b
             ',':b | p == 0 ->
@@ -197,7 +197,7 @@ imports l = let (a, b) = break (=="--+") l in a ++ loop (drop 1 b) where
          "import "
             ++ (if "as" `isPrefixOf` dropWhile isSpace acc
                   then "qualified " else "")
-            ++ mod ++ " " ++ acc
+            ++ name ++ " " ++ acc
 
 process :: String -> String 
 process =

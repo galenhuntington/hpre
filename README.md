@@ -315,7 +315,7 @@ I find this dovetails nicely with type annotations:
 ```
 
 Dittos don’t need to be on the top level; the only requirement is
-that the function name be the first word on the line:
+that the function name be the first word on a line:
 
 ```haskell
    fromDigits base = loop where

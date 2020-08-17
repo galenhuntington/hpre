@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 85ec2255552425e86422a1490ada7bf4bf7f39ce2f40965f6322fe63fcddcb17
+-- hash: 91e6301099dd492b7376aa7f32126b08ccecfd06eb4e0d7de6eb003e2c94295e
 
 name:                hpre
 version:             1.5.2
@@ -19,6 +19,7 @@ executable hpre
   main-is: hpre.hs
   other-modules:
       Paths_hpre
+  ghc-options: -Wall -Wredundant-constraints -Wmissing-deriving-strategies -Wderiving-defaults
   build-depends:
       base ==4.*
     , mtl ==2.*
