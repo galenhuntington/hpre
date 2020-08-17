@@ -479,7 +479,8 @@ I have used `hpre` in several large and complex projects without
 problems.
 
 All features I seriously considered for `hpre` have now been
-implemented, so no additions are planned any time soon.
+implemented, so no additions are planned any time soon, although some
+of the existing features may continue to be refined.
 
 
 ##  Installation and use
