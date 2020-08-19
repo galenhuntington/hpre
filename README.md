@@ -169,7 +169,7 @@ If you don’t use tabs, this feature has no effect.
 
 Haskell uses guards to break down cases inside a definition or `case`
 expression.  The standard idiom for the “default” case is to use
-`otherwise`.
+`otherwise`:
 
 ```haskell
    fac n | n < 1     = 1
