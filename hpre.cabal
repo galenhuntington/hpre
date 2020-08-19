@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 91e6301099dd492b7376aa7f32126b08ccecfd06eb4e0d7de6eb003e2c94295e
+-- hash: 9c9961944c0883c9422bde4bdc5658e70e3eff5822f888c2e4020f7722c463d0
 
 name:                hpre
-version:             1.5.2
+version:             1.5.3.1
 synopsis:            Simple but handy Haskell preprocessor.
 license:             MIT
 author:              Galen Huntington
@@ -19,7 +19,6 @@ executable hpre
   main-is: hpre.hs
   other-modules:
       Paths_hpre
-  ghc-options: -Wall -Wredundant-constraints -Wmissing-deriving-strategies -Wderiving-defaults
   build-depends:
       base ==4.*
     , mtl ==2.*

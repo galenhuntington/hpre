@@ -167,9 +167,9 @@ If you don’t use tabs, this feature has no effect.
 
 ##  Empty guards
 
-Haskell uses guards to break down cases inside a `case` statement or
-function definition.  The standard idiom for the “default” case
-is to use `otherwise`.
+Haskell uses guards to break down cases inside a definition or `case`
+expression.  The standard idiom for the “default” case is to use
+`otherwise`.
 
 ```haskell
    fac n | n < 1     = 1
