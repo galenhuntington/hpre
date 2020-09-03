@@ -46,7 +46,7 @@ tickedNums l@(x:m)
       let (p1, p2) = span (\y -> isDigit y || isTick y) l
           p1' = filter (not.isTick) p1
                   ++ reverse (takeWhile isTick $ reverse p1) -- prob not needed
-      in (if p1/=p1' then warn "Ticked numbers are deprecated." else id)
+      in (if p1/=p1' && '\'' `elem` p1 then warn "Ticked numbers are deprecated." else id)
             $ p1' ++ tickedNums p2
    | isNameChar x =
       let (nm, rest) = span isNameChar l
