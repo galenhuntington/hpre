@@ -1,5 +1,5 @@
 name: hpre
-version: 1.5.3.2
+version: 1.6.0
 license: MIT
 author: Galen Huntington
 synopsis: Simple but handy Haskell preprocessor.
@@ -8,6 +8,17 @@ category: Language
 executable:
    main: hpre.hs
 
+data-files:
+- "tests/*"
+
+tests:
+   test:
+      main: test.hs
+      dependencies:
+      - process
+      - directory
+
 dependencies:
    base: 4.*
    mtl: 2.*
+
