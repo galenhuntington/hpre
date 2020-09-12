@@ -30,7 +30,7 @@ install:
       ghc --version
       cabal --version
       cabal new-update
-      cabal new-install
+      cabal new-install hpre
     else
       curl -sSL https://get.haskellstack.org/ | sh
       stack --version
