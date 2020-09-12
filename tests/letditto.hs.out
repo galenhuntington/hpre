@@ -1,0 +1,8 @@
+foo :: Int -> Bool
+foo{-#COLUMN 5#-}0 = not $ let once True = let twice False = False
+                                  twice{-#COLUMN 41#-}_     = True
+                              in once $ twice True
+                  once{-#COLUMN 24#-}_    = False
+              in once True
+foo{-#COLUMN 5#-}x = True
+

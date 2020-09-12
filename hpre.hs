@@ -100,6 +100,19 @@ expandDitto val line =
       (ditto, l2) = break isSpace l1
       (sps, rest) = span isSpace l2
 
+letFinderS :: String -> [(Int, String)] -> [(Int, String)]
+letFinderS line = flip loop chunks where
+   chunks = unfoldr chunk (0, line)
+   chunk (_, "") = Nothing
+   chunk (col, s) = Just ((s1, s2, col'), (col' + length s2, s3)) where
+      (s1, s1') = break isNameChar s
+      (s2, s3) = span isNameChar s1'
+      col' = col + length s1
+   loop ac ((_, "let", _) : (sps, nm, ind) : rest)
+      | all isSpace sps = loop ((ind, nm) : ac) rest
+   loop ac (_ : rest)   = loop ac rest
+   loop ac _            = ac
+
 --  "Ditto marks" for repeated names in definitions.
 --  TODO? allow mid-line names to be ditto'ed
 dittoM :: String -> State DittoHist String
@@ -107,19 +120,20 @@ dittoM line = do
    let (sp1, rest) = span isSpace line
        indent = length sp1
    (cur, hist) <- gets $ histAtIndent indent
+   let put' = put . letFinderS line
    let doDitto = case cur of
          Just val -> do
-            put $ (indent, val) : hist
+            put' $ (indent, val) : hist
             pure $ expandDitto val line
          _        -> abort $ "Orphaned ditto mark:  " ++ line
    case rest of
       '\'':'\'':x:rest' | isSpace x         -> doDitto
       c:x:rest' | c `elem` "”〃", isSpace x -> doDitto
       c:_ | isLower c                       -> do
-         put $ (indent, takeWhile isNameChar rest) : hist
+         put' $ (indent, takeWhile isNameChar rest) : hist
          pure line
       _                                     -> do
-         put hist
+         put' hist
          pure line
 
 dittoMarks :: [String] -> [String]

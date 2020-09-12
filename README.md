@@ -37,8 +37,8 @@ conflict with either notation.
 
 ##  Trailing commas and the like
 
-_An extension `ExtraCommas` has been proposed that would replace some
-of these features, but it has been stalled for a while._
+_A GHC extension `ExtraCommas` has been proposed that would replace
+some of these features, but it has been stalled for a while._
 
 That a comma is not allowed after the last item in a comma-separated
 list is a recurring nuisance.  It is easy to fail to attend to
@@ -315,12 +315,23 @@ I find this dovetails nicely with type annotations:
 ```
 
 Dittos don’t need to be on the top level; the only requirement is
-that the function name be the first word on a line:
+that the name be the first word on a line:
 
 ```haskell
    fromDigits base = loop where
       loop (x:l) = x * base + loop l
       ''   []    = 0
+```
+
+An experimental new feature also allows ditto of the assignment to a
+`let` on the same line:
+
+```haskell
+   fromDigits base =
+      let loop :: [Int] -> Int
+          ''   (x:l) = x * base + loop l
+          ''   []    = 0
+      in loop
 ```
 
 `hpre` also accepts the Unicode ditto mark (`”`) and the CJK ditto
