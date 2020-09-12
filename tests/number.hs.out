@@ -1,0 +1,3 @@
+number :: Double
+number = 299792458.123456
+
