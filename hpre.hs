@@ -80,40 +80,51 @@ emptyGuard (c1:'|':c2:s) | isSpace c1 && isSpace c2 =
 emptyGuard (c:s) = c : emptyGuard s
 emptyGuard _ = []
 
-type DittoHist = [(Int, String)]
-
 columnPragma :: Int -> String
 columnPragma col = "{-#COLUMN " ++ show col ++ "#-}"
+
+type DittoHist = [(Int, String)]
+
+histAtIndent :: Int -> DittoHist -> (Maybe String, DittoHist)
+histAtIndent ind hist =
+   case dropWhile ((> ind) . fst) hist of
+      (ind', s) : hist' | ind == ind' -> (Just s, hist')
+      hist'                           -> (Nothing, hist')
+
+--  This recomputes some stuff for better separation.
+expandDitto :: String -> String -> String
+expandDitto val line =
+   pre ++ val ++ columnPragma (length (pre ++ ditto ++ sps) + 1) ++ rest
+   where
+      (pre, l1)   = span isSpace line
+      (ditto, l2) = break isSpace l1
+      (sps, rest) = span isSpace l2
 
 --  "Ditto marks" for repeated names in definitions.
 --  TODO? allow mid-line names to be ditto'ed
 dittoM :: String -> State DittoHist String
-dittoM s = (sp1 ++) <$>
+dittoM line = do
+   let (sp1, rest) = span isSpace line
+       indent = length sp1
+   -- traceShowM =<< get
+   (cur, hist) <- histAtIndent indent <$> get
+   let doDitto = case cur of
+         Just val -> do
+            put $ (indent, val) : hist
+            pure $ expandDitto val line
+         _        -> abort $ "Orphaned ditto mark:  " ++ line
    case rest of
-      '\'':'\'':x:rest' | isSpace x         -> doDitto 2 rest'
-      c:x:rest' | c `elem` "”〃", isSpace x -> doDitto 1 rest'
+      '\'':'\'':x:rest' | isSpace x         -> doDitto
+      c:x:rest' | c `elem` "”〃", isSpace x -> doDitto
       c:_ | isLower c                       -> do
-         modify $ \hist ->
-            (indent, takeWhile isNameChar rest)
-               : dropWhile ((>= indent) . fst) hist
-         pure rest
-      _                                     -> pure rest
-   where
-      (sp1, rest) = span isSpace s
-      indent = length sp1
-      doDitto :: Int -> String -> State DittoHist String
-      doDitto wid rest' = do
-         valm <- gets $ lookup indent
-         pure $ case valm of
-            Just val ->
-               let (sp2, rest'') = span isSpace rest' in
-                  val ++
-                  columnPragma (indent + wid + length sp2 + 2) ++
-                  rest''
-            _ -> abort $ "Orphaned ditto mark:  " ++ s
+         put $ (indent, takeWhile isNameChar rest) : hist
+         pure line
+      _                                     -> do
+         put hist
+         pure line
 
 dittoMarks :: [String] -> [String]
-dittoMarks inp = flip evalState [] $ mapM dittoM inp
+dittoMarks inp = flip evalState [] $ traverse dittoM inp
 
 --  TODO can get messed up by quotes
 decomment :: String -> String

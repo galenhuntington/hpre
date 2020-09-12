@@ -1,5 +1,5 @@
 name: hpre
-version: 1.6.1.3
+version: 1.6.2
 license: MIT
 author: Galen Huntington
 synopsis: Simple but handy Haskell preprocessor.
