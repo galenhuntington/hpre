@@ -1,10 +1,19 @@
 {-# LANGUAGE LambdaCase #-}
 
 isPos :: Int -> Bool
-''  x | x > 0 = True
-      |       = False
+isPos x | x > 0 = True
+        |       = a where a :: Bool
+                          a = False
 
 isPos' :: Int -> Bool
-''  = \case
-   x | x > 0 -> True
-     |       -> False
+isPos' = \case
+   x | x>0 -> True
+     |     -> a where a :: Bool
+                      a = False
+
+noQuote :: String
+noQuote =
+   reverse "|  ="
+   ++
+   reverse "|  ->"
+

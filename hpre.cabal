@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 948f9711f8f861bc4922669b298879209f5b6abd2f51a3c02f88f65e684a18f9
+-- hash: 085b572ed7bc2c7f2657fbd3f5c8a64b54104250833da5f6fdbc0537cf53d42c
 
 name:                hpre
-version:             1.6.3.1
+version:             1.6.3.3
 synopsis:            Simple but handy Haskell preprocessor.
 license:             MIT
 author:              Galen Huntington
