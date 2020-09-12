@@ -13,6 +13,10 @@ str1 :: String
 str2 :: String
 〃  = "test2"
 
+str3 :: String
+str3 = str4 where
+   str4 :: String
+   '' = "test3"
 
 isPos :: Int -> Bool
 ''  x | x > 0 = True

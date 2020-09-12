@@ -13,6 +13,10 @@ str1{-#COLUMN 5#-}= "test1"
 str2 :: String
 str2{-#COLUMN 4#-}= "test2"
 
+str3 :: String
+str3 = str4 where
+   str4 :: String
+   str4{-#COLUMN 7#-}= "test3"
 
 isPos :: Int -> Bool
 isPos{-#COLUMN 5#-}x | x > 0 = True
