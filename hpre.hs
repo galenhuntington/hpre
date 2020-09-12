@@ -106,8 +106,7 @@ dittoM :: String -> State DittoHist String
 dittoM line = do
    let (sp1, rest) = span isSpace line
        indent = length sp1
-   -- traceShowM =<< get
-   (cur, hist) <- histAtIndent indent <$> get
+   (cur, hist) <- gets $ histAtIndent indent
    let doDitto = case cur of
          Just val -> do
             put $ (indent, val) : hist
