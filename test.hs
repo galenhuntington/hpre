@@ -38,5 +38,5 @@ main = do
    setCurrentDirectory testDir
    tests <- filter (".hs" `isSuffixOf`) <$> listDirectory testDir
    res <- and <$> traverse runTest (sort tests)
-   exitWith $ if res then ExitSuccess else ExitFailure 1
+   if res then exitSuccess else exitFailure
 

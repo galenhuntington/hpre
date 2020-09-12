@@ -3,7 +3,6 @@ import Data.Char
 import Control.Monad.State
 import Data.List
 import Data.Maybe
-
 import Debug.Trace
 
 --  YMMV
@@ -14,6 +13,9 @@ __ = True  -- second-best
 
 warn :: String -> a -> a
 warn = trace . ("Warning: " ++)
+
+abort :: String -> a
+abort = errorWithoutStackTrace
 
 --  Yank up to end of quote.
 --  TODO multiline quote support
@@ -108,7 +110,7 @@ dittoM s = (sp1 ++) <$>
                   val ++
                   columnPragma (indent + wid + length sp2 + 2) ++
                   rest''
-            _ -> error $ "Orphaned ditto mark:  " ++ s
+            _ -> abort $ "Orphaned ditto mark:  " ++ s
 
 dittoMarks :: [String] -> [String]
 dittoMarks inp = flip evalState [] $ mapM dittoM inp
@@ -212,5 +214,5 @@ main = do
          writeFile outf
             $ "{-# LINE 1 \"" ++ nm ++ "\" #-}\n" ++ process file
       [] -> interact process
-      _  -> error "Usage: hpre [name infile outfile]"
+      _  -> abort "Usage: hpre [name infile outfile]"
 

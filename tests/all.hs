@@ -32,16 +32,24 @@ isPosU ∷ Int → Bool
    x | x > 0 → True
      |       → False
 
+nested :: Int -> Bool
+''  0 = a where
+   a :: Bool
+   '' = True
+''  _ = b where
+   b :: Bool
+   b = False
+
 list :: [Int]
-''  = [
-   1,
+''  = [  -- comment
+   1,    -- comment
    2,
    ]
 
 list' :: [Int]
-''  = [
-   , 1
-   , 2
+''  = [  -- comment
+   , 1   -- comment
+   , 2   -- comment
    ]
 
 data Test =
@@ -52,6 +60,6 @@ tabbed :: Int
 ''  = x where
 	x = 1
 
-number :: Int
+number :: Double
 number = 299_792_458.123_456
 
