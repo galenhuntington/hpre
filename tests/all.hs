@@ -52,9 +52,9 @@ list' :: [Int]
    , 2   -- comment
    ]
 
-data Test =
-   | Test1
-   | Test2
+data Test = -- comment
+   | Test1  -- comment
+   | Test2  -- comment
 
 tabbed :: Int
 ''  = x where
