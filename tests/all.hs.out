@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase, UnicodeSyntax #-}
+{-# LANGUAGE LambdaCase, UnicodeSyntax, TupleSections #-}
 
 import Data.List as List
 import qualified Control.Monad as Monad
@@ -71,6 +71,9 @@ constraint :: (
    , Read a
    ) => a -> a
 constraint = read . show
+
+slice :: Int -> Int
+slice{-#COLUMN 5#-}= fst . (5,)
 
 tabbed :: Int
 tabbed{-#COLUMN 5#-}= x where
