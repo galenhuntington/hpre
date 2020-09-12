@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0965a8c843e5140052bc237694110642cb6007c3241f0e3a2c4e8c92e0f1b04e
+-- hash: 948f9711f8f861bc4922669b298879209f5b6abd2f51a3c02f88f65e684a18f9
 
 name:                hpre
 version:             1.6.3.1
@@ -27,6 +27,8 @@ data-files:
     tests/ditto3.hs.err
     tests/ditto4.hs
     tests/ditto4.hs.err
+    tests/guards.hs
+    tests/guards.hs.out
     tests/imports.hs
     tests/imports.hs.out
     tests/number.hs

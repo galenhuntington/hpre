@@ -1,0 +1,11 @@
+{-# LANGUAGE LambdaCase #-}
+
+isPos :: Int -> Bool
+isPos{-#COLUMN 5#-}x | x > 0 = True
+      | True  = False
+
+isPos' :: Int -> Bool
+isPos'{-#COLUMN 5#-}= \case
+   x | x > 0 -> True
+     | True  -> False
+
