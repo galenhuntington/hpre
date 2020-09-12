@@ -82,3 +82,7 @@ tabbed{-#COLUMN 5#-}= x where
 number :: Double
 number = 299792458.123456
 
+column :: Int
+column{-#COLUMN 4#-}= a where a :: Int
+             a = 4
+

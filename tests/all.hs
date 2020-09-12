@@ -82,3 +82,7 @@ tabbed :: Int
 number :: Double
 number = 299_792_458.123_456
 
+column :: Int
+'' = a where a :: Int
+             a = 4
+
