@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c20432eaf8f380666a01be90b340fda0594b3d2c3a99ff3ef8e161acaff6fdbb
+-- hash: 8c6bcf2022896eccd8a1bed9ca4c757c0e3aa5884dd9df15d573580133ff9d65
 
 name:                hpre
-version:             1.6.1.3
+version:             1.6.2.1
 synopsis:            Simple but handy Haskell preprocessor.
 license:             MIT
 author:              Galen Huntington
@@ -15,8 +15,10 @@ maintainer:          Galen Huntington
 category:            Language
 build-type:          Simple
 data-files:
-    tests/all.hs
-    tests/all.hs.out
+    tests/commas.hs
+    tests/commas.hs.out
+    tests/ditto.hs
+    tests/ditto.hs.out
     tests/ditto1.hs
     tests/ditto1.hs.err
     tests/ditto2.hs
@@ -25,12 +27,20 @@ data-files:
     tests/ditto3.hs.err
     tests/ditto4.hs
     tests/ditto4.hs.err
+    tests/imports.hs
+    tests/imports.hs.out
+    tests/number.hs
+    tests/number.hs.out
     tests/qualified.hs
     tests/qualified.hs.err
     tests/qualified.hs.out
+    tests/tabbed.hs
+    tests/tabbed.hs.out
     tests/ticked.hs
     tests/ticked.hs.err
     tests/ticked.hs.out
+    tests/unicode.hs
+    tests/unicode.hs.out
 
 executable hpre
   main-is: hpre.hs

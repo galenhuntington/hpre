@@ -1,0 +1,11 @@
+{-# LANGUAGE LambdaCase, UnicodeSyntax #-}
+
+str1 :: String
+str1{-#COLUMN 4#-}= "test1"
+
+isPosU ∷ Int → Bool
+isPosU{-#COLUMN 5#-}= \case
+   x | x > 0 → True
+     | True  → False
+
+
