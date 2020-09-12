@@ -31,7 +31,7 @@ install:
       cabal --version
       cabal new-update
       cabal new-build --enable-tests --enable-benchmarks
-      cabal new-install
+      cabal new-install --symlink-bindir=~/.cabal/bin
     else
       curl -sSL https://get.haskellstack.org/ | sh
       stack --version
