@@ -4,6 +4,10 @@ import Control.Monad.State
 import Data.List
 import Data.Maybe
 import Debug.Trace
+import Data.Version (showVersion)
+
+import Paths_hpre (version)
+
 
 --  YMMV
 tabWidth = 3 :: Int
@@ -233,6 +237,7 @@ process =
 main = do
    args <- getArgs
    case args of
+      ["--version"] -> putStrLn $ "hpre v" ++ showVersion version
       [nm, inf, outf] -> do
          file <- readFile inf
          writeFile outf
