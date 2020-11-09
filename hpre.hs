@@ -1,12 +1,18 @@
+{-# LANGUAGE CPP #-}
+
 import System.Environment
 import Data.Char
 import Control.Monad.State
 import Data.List
 import Data.Maybe
 import Debug.Trace
-import Data.Version (showVersion)
+import Data.Version
 
+#ifdef BUILDING
 import Paths_hpre (version)
+#else
+version = Version [] ["n/a"]
+#endif
 
 
 --  YMMV
