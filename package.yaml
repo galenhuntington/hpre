@@ -1,5 +1,5 @@
 name: hpre
-version: 1.7.2
+version: 1.8.0
 license: MIT
 author: Galen Huntington
 synopsis: Simple but handy Haskell preprocessor.
@@ -11,7 +11,7 @@ executable:
 data-files:
 - "tests/*"
 
-ghc-options: -DBUILDING
+cpp-options: -DBUILDING
 
 tests:
    test:

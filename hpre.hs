@@ -142,9 +142,10 @@ dittoM line = do
       c:_ | isLower c                       -> do
          put' $ (indent, takeWhile isNameChar rest) : hist
          pure line
-      _                                     -> do
-         put' hist
-         pure line
+      '-':'-':_ -> pure line
+      '{':'-':_ -> pure line
+      '-':'}':_ -> pure line
+      _         -> put' hist *> pure line
 
 dittoMarks :: [String] -> [String]
 dittoMarks inp = flip evalState [] $ traverse dittoM inp
