@@ -114,7 +114,7 @@ This could in principle conflict with the tuple section extension,
 where `(True,)` is a function `a -> (Bool, a)`, but it would be
 madness to insert a newline before the closing parenthesis.
 
-_Leading_ commas are similarly supported, so these can be written:
+Leading commas are similarly supported, so these can be written:
 
 ```haskell
    mapM_ print [
@@ -128,7 +128,7 @@ _Leading_ commas are similarly supported, so these can be written:
       } deriving (Eq, Show)
 ```
 
-In addition, `hpre` supports leading _bars_ in `data` declarations:
+In addition, `hpre` supports leading bars in `data` declarations:
 
 ```haskell
    data Foobar =
