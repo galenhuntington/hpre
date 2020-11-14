@@ -323,8 +323,7 @@ that the name be the first word on a line:
       ''   []    = 0
 ```
 
-An experimental new feature also allows ditto of the assignment to a
-`let` on the same line:
+An experimental new feature allows dittoing a `let` assignment:
 
 ```haskell
    fromDigits base =
