@@ -23,3 +23,10 @@ column :: Int
 '' = a where a :: Int
              a = 4
 
+blankLine :: ()
+
+''  = ()
+
+spacesOnlyLine :: ()
+          
+''  = ()

@@ -142,6 +142,7 @@ dittoM line = do
       c:_ | isLower c                       -> do
          put' $ (indent, takeWhile isNameChar rest) : hist
          pure line
+      []        -> pure line
       '-':'-':_ -> pure line
       '{':'-':_ -> pure line
       '-':'}':_ -> pure line
