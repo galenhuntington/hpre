@@ -157,11 +157,10 @@ dittoMarks inp = flip evalState [] $ traverse dittoM inp
 --  TODO can get messed up by quotes
 decomment :: String -> String
 decomment s
-   | null s' || take 2 s' == "--" = []
-   | __ =
-      if isSymbolChar c
-         then let (a, b) = span isSymbolChar s in a ++ decomment b
-         else c : decomment rest
+   | null s' || take 2 s' == "--"
+                    = []
+   | isSymbolChar c = let (a, b) = span isSymbolChar s in a ++ decomment b
+   | __             = c : decomment rest
    where
    s'     = dropWhile isSpace s
    c:rest = s
