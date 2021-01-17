@@ -3,17 +3,15 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: db39a0aea301953e62c84d2e7344c3f0b69453c78c4475b30acd478d1f8b744c
 
-name:                hpre
-version:             1.8.1
-synopsis:            Simple but handy Haskell preprocessor.
-license:             MIT
-author:              Galen Huntington
-maintainer:          Galen Huntington
-category:            Language
-build-type:          Simple
+name:           hpre
+version:        1.8.2
+synopsis:       Simple but handy Haskell preprocessor.
+category:       Language
+author:         Galen Huntington
+maintainer:     Galen Huntington
+license:        MIT
+build-type:     Simple
 data-files:
     tests/commas.hs
     tests/commas.hs.out
@@ -61,10 +59,13 @@ test-suite test
   main-is: test.hs
   other-modules:
       Paths_hpre
+  ghc-options: -Wall
   cpp-options: -DBUILDING
   build-depends:
       base ==4.*
-    , directory
+    , filepath
     , mtl ==2.*
     , process
+    , tasty
+    , tasty-golden
   default-language: Haskell2010

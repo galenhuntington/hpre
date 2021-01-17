@@ -137,9 +137,9 @@ dittoM line = do
             pure $ expandDitto val line
          _        -> abort $ "Orphaned ditto mark:  " ++ line
    case rest of
-      '\'':'\'':x:rest' | isSpace x         -> doDitto
-      c:x:rest' | c `elem` "”〃", isSpace x -> doDitto
-      c:_ | isLower c                       -> do
+      '\'':'\'':x:_ | isSpace x         -> doDitto
+      c:x:_ | c `elem` "”〃", isSpace x -> doDitto
+      c:_ | isLower c                   -> do
          put' $ (indent, takeWhile isNameChar rest) : hist
          pure line
       []        -> pure line

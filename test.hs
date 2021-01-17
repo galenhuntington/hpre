@@ -1,15 +1,22 @@
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE CPP, TypeApplications #-}
 
-import Paths_hpre
-import System.Directory
+import Data.Functor
 import System.Process
-import Control.Exception
 import System.Exit
-import Data.List
-import Text.Printf
+import Control.Exception
+import Control.Monad
+import System.FilePath
 
--- import Control.Monad
+import Test.Tasty (defaultMain, TestTree, testGroup)
+import Test.Tasty.Golden
+import Test.Tasty.Golden.Advanced (goldenTest)
 
+#ifdef BUILDING
+import Paths_hpre
+#else
+getBinDir = pure ""
+getDataDir = pure ""
+#endif
 
 runHpre :: String -> IO (String, String)
 runHpre inp = do
@@ -17,26 +24,30 @@ runHpre inp = do
    (ec, out, err) <- readProcessWithExitCode hpre [] inp
    pure (case ec of ExitSuccess -> out; _ -> "", err)
 
-getOutput :: FilePath -> IO String
-getOutput fn =
+loadMayFile :: FilePath -> IO String
+loadMayFile fn =
    catch @IOException (readFile fn) (const $ pure "")
 
-runTest :: FilePath -> IO Bool
-runTest file = do
-   printf "   %-20s" file
-   inp <- readFile file
-   (out, err) <- runHpre inp
-   let matches tgt ext = (== tgt) <$> getOutput (file ++ ext)
-   ok <- (&&) <$> matches out ".out" <*> matches err ".err"
-   putStr $ if ok then "\027[01;32mOK" else "\027[01;31mFAIL"
-   putStrLn "\027[00m"
-   pure ok
+runTest :: FilePath -> TestTree
+runTest ref
+   = goldenTest
+      name
+      ((,) <$> get "out" <*> get "err")
+      (runHpre =<< readFile ref)
+      (\x y -> pure $ guard (x/=y) $> "")
+      (\ (o, e) -> write "out" o *> write "err" e) -- not tried yet
+   where
+   name = takeFileName ref
+   get ext = loadMayFile $ ref <.> ext
+   write ext = writeFile $ ref <.> ext
 
-main = do
+allGoldens :: IO TestTree
+allGoldens = do
    putStrLn "\nRunning tests...."
    testDir <- (++ "/tests") <$> getDataDir
-   setCurrentDirectory testDir
-   tests <- filter (".hs" `isSuffixOf`) <$> listDirectory testDir
-   res <- and <$> traverse runTest (sort tests)
-   if res then exitSuccess else exitFailure
+   tests <- findByExtension [".hs"] testDir
+   pure $ testGroup "golden out/err tests" $ map runTest tests
+
+main :: IO ()
+main = defaultMain =<< allGoldens
 
