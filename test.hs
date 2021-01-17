@@ -6,6 +6,7 @@ import System.Exit
 import Control.Exception
 import Control.Monad
 import System.FilePath
+import Data.List (sort)
 
 import Test.Tasty (defaultMain, TestTree, testGroup)
 import Test.Tasty.Golden
@@ -45,7 +46,7 @@ allGoldens :: IO TestTree
 allGoldens = do
    putStrLn "\nRunning tests...."
    testDir <- (++ "/tests") <$> getDataDir
-   tests <- findByExtension [".hs"] testDir
+   tests <- sort <$> findByExtension [".hs"] testDir
    pure $ testGroup "golden out/err tests" $ map runTest tests
 
 main :: IO ()
