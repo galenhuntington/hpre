@@ -72,6 +72,9 @@ tickedNums l@(x:m)
    isTick c = c == '\'' || c == '_'
 tickedNums _       = []
 
+elseWord :: String
+elseWord = "True"
+
 --  Empty guards are filled in with True.
 --  This was formerly monadic and could perhaps be simplified.
 emptyGuard :: String -> String
@@ -80,14 +83,14 @@ emptyGuard (q:c:s) | q=='\\' || q=='\'' =
 emptyGuard ('"':s) =
    let (a, b) = skipQuote s in '"' : a ++ emptyGuard b
 emptyGuard (c1:'|':c2:s) | isSpace c1 && isSpace c2 =
-   c1 : '|' : pfx ++ emptyGuard p2 where
+   c1 : '|' : pf ++ emptyGuard p2 where
       (p1, p2) = span isSpace s
       p2' = takeWhile isSymbolChar p2
-      pfx 
-         | p2' `elem` ["=", "→", "->"] =
+      pf | p2' `elem` ["=", "→", "->"] =
             case length p1 of
-               x | x<4  -> "True"
-                 | __   -> c2 : "True" ++ drop 4 p1
+               x | x<size -> elseWord
+                 | __     -> c2 : elseWord ++ drop size p1
+                where size = length elseWord
          | __ = c2 : p1
 emptyGuard (c:s) = c : emptyGuard s
 emptyGuard _ = []
