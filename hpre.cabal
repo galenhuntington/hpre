@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e1fd26135813a6e7dd4832b876aaaaa7a6eeddce5c1c02f3c88f77e15c4afcb0
+-- hash: c884b43b01b8a3068bf38a93bef43f26b0fc3226c3af4b7685fe044a16ad3e05
 
 name:           hpre
-version:        1.8.3.1
+version:        1.8.3.2
 synopsis:       Simple but handy Haskell preprocessor.
 category:       Language
 author:         Galen Huntington
@@ -34,6 +34,7 @@ test-suite test
   cpp-options: -DBUILDING
   build-depends:
       base ==4.*
+    , directory
     , filepath
     , mtl ==2.*
     , process

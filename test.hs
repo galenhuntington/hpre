@@ -3,6 +3,7 @@
 import Data.Functor
 import System.Process
 import System.Exit
+import System.Directory (removeFile)
 import Control.Exception
 import Control.Monad
 import System.FilePath
@@ -32,6 +33,10 @@ loadMayFile fn =
    catch @IOException (strict <$> readFile fn) (const $ pure "")
       where strict x = length x `seq` x
 
+saveMayFile :: FilePath -> String -> IO ()
+saveMayFile fn ""  = void $ try @IOException $ removeFile fn
+saveMayFile fn dat = writeFile fn dat
+
 runTest :: FilePath -> TestTree
 runTest ref
    = goldenTest
@@ -43,7 +48,7 @@ runTest ref
    where
    name = takeFileName ref
    get ext = loadMayFile $ ref <.> ext
-   write ext = writeFile $ ref <.> ext
+   write ext = saveMayFile $ ref <.> ext
 
 allGoldens :: IO TestTree
 allGoldens = do

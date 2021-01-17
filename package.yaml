@@ -1,5 +1,5 @@
 name: hpre
-version: 1.8.3.1
+version: 1.8.3.2
 license: MIT
 author: Galen Huntington
 synopsis: Simple but handy Haskell preprocessor.
@@ -17,6 +17,7 @@ tests:
       dependencies:
       - process
       - filepath
+      - directory
       - tasty
       - tasty-golden
 
