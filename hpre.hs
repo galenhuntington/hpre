@@ -7,6 +7,7 @@ import Data.List
 import Data.Maybe
 import Debug.Trace
 import Data.Version
+import Text.Read.Lex
 
 #ifdef BUILDING
 import Paths_hpre (version)
@@ -81,8 +82,9 @@ emptyGuard ('"':s) =
 emptyGuard (c1:'|':c2:s) | isSpace c1 && isSpace c2 =
    c1 : '|' : pfx ++ emptyGuard p2 where
       (p1, p2) = span isSpace s
+      p2' = takeWhile isSymbolChar p2
       pfx 
-         | take 1 p2 `elem` ["=", "→"] || take 2 p2 == "->" =
+         | p2' `elem` ["=", "→", "->"] =
             case length p1 of
                x | x<4  -> "True"
                  | __   -> c2 : "True" ++ drop 4 p1
@@ -153,10 +155,10 @@ dittoMarks inp = flip evalState [] $ traverse dittoM inp
 
 --  TODO can get messed up by quotes
 decomment :: String -> String
-decomment s = case s of
-   '-':'-':_  -> []
-   c:s'       -> c : decomment s'
-   _          -> []
+decomment s | take 2 s == "--" = []
+            | __               =
+   let (a, b) = span isSymbolChar s
+   in a ++ (case b of c:s' -> c : decomment s'; _ -> [])
 
 stripSpace :: String -> String
 stripSpace = reverse . dropWhile isSpace . reverse . dropWhile isSpace
