@@ -153,12 +153,18 @@ dittoM line = do
 dittoMarks :: [String] -> [String]
 dittoMarks inp = flip evalState [] $ traverse dittoM inp
 
+--  Strips final comments and also spaces while it's at it.
 --  TODO can get messed up by quotes
 decomment :: String -> String
-decomment s | take 2 (dropWhile isSpace s) == "--" = []
-            | __
-   = let (a, b) = span isSymbolChar s
-     in a ++ (case b of c:s' -> c : decomment s'; _ -> [])
+decomment s
+   | null s' || take 2 s' == "--" = []
+   | __ =
+      if isSymbolChar c
+         then let (a, b) = span isSymbolChar s in a ++ decomment b
+         else c : decomment rest
+   where
+   s'     = dropWhile isSpace s
+   c:rest = s
 
 stripSpace :: String -> String
 stripSpace = reverse . dropWhile isSpace . reverse . dropWhile isSpace
@@ -176,7 +182,7 @@ spanCommentLines = span (null . stripSpace . decomment)
 commasR :: [String] -> [String]
 commasR []     = []
 commasR (l:ls) = (: commasR ls) $ fromMaybe l $ do
-   ',' : l' <- pure $ dropWhile isSpace $ reverse $ decomment l
+   ',' : l' <- pure $ reverse $ decomment l
    nxt : _  <- pure $ snd $ spanCommentLines ls
    c : _    <- pure $ dropWhile isSpace nxt
    guard $ c `elem` "])}"
@@ -185,7 +191,7 @@ commasR (l:ls) = (: commasR ls) $ fromMaybe l $ do
 commasL :: [String] -> [String]
 commasL []     = []
 commasL (l:ls) = fromMaybe (l : commasL ls) $ do
-   c : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
+   c : _ <- pure $ reverse $ decomment l
    guard $ c `elem` "{(["
    let (comms, rest) = spanCommentLines ls
    nxt : ls' <- pure rest
@@ -196,7 +202,7 @@ dataBarsL :: [String] -> [String]
 dataBarsL []    = []
 dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    guard $ "data " `isPrefixOf` l
-   '=' : _ <- pure $ dropWhile isSpace $ reverse $ decomment l
+   '=' : _ <- pure $ reverse $ decomment l
    let (comms, rest) = spanCommentLines ls
    nxt : ls' <- pure rest
    nxt' <- spaceOut '|' nxt

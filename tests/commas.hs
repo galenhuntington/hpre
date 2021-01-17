@@ -3,7 +3,7 @@
 list :: [Int]
 list = [  -- comment
    1,    -- comment
-   2,
+   2,    
    ]
 
 list' :: [Int]
