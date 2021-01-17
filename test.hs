@@ -16,27 +16,30 @@ import Test.Tasty.Golden.Advanced (goldenTest)
 import Paths_hpre
 #else
 getBinDir = pure ""
-getDataDir = pure ""
 #endif
 
-runHpre :: String -> IO (String, String)
+data OutErr = OutErr !String !String
+   deriving (Eq)
+
+runHpre :: String -> IO OutErr
 runHpre inp = do
    hpre <- (++ "/hpre") <$> getBinDir
    (ec, out, err) <- readProcessWithExitCode hpre [] inp
-   pure (case ec of ExitSuccess -> out; _ -> "", err)
+   pure $ OutErr (case ec of ExitSuccess -> out; _ -> "") err
 
 loadMayFile :: FilePath -> IO String
 loadMayFile fn =
-   catch @IOException (readFile fn) (const $ pure "")
+   catch @IOException (strict <$> readFile fn) (const $ pure "")
+      where strict x = length x `seq` x
 
 runTest :: FilePath -> TestTree
 runTest ref
    = goldenTest
       name
-      ((,) <$> get "out" <*> get "err")
+      (OutErr <$> get "out" <*> get "err")
       (runHpre =<< readFile ref)
       (\x y -> pure $ guard (x/=y) $> "")
-      (\ (o, e) -> write "out" o *> write "err" e) -- not tried yet
+      (\ (OutErr o e) -> write "out" o *> write "err" e)
    where
    name = takeFileName ref
    get ext = loadMayFile $ ref <.> ext
@@ -45,8 +48,7 @@ runTest ref
 allGoldens :: IO TestTree
 allGoldens = do
    putStrLn "\nRunning tests...."
-   testDir <- (++ "/tests") <$> getDataDir
-   tests <- sort <$> findByExtension [".hs"] testDir
+   tests <- sort <$> findByExtension [".hs"] "tests"
    pure $ testGroup "golden out/err tests" $ map runTest tests
 
 main :: IO ()
