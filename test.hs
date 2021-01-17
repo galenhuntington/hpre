@@ -15,7 +15,7 @@ import Test.Tasty.Golden.Advanced (goldenTest)
 #ifdef BUILDING
 import Paths_hpre
 #else
-getBinDir = pure ""
+getBinDir = pure "."
 #endif
 
 data OutErr = OutErr !String !String
