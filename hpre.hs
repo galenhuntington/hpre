@@ -155,10 +155,10 @@ dittoMarks inp = flip evalState [] $ traverse dittoM inp
 
 --  TODO can get messed up by quotes
 decomment :: String -> String
-decomment s | take 2 s == "--" = []
-            | __               =
-   let (a, b) = span isSymbolChar s
-   in a ++ (case b of c:s' -> c : decomment s'; _ -> [])
+decomment s | take 2 (dropWhile isSpace s) == "--" = []
+            | __
+   = let (a, b) = span isSymbolChar s
+     in a ++ (case b of c:s' -> c : decomment s'; _ -> [])
 
 stripSpace :: String -> String
 stripSpace = reverse . dropWhile isSpace . reverse . dropWhile isSpace
@@ -211,33 +211,36 @@ imports xs = let (a, b) = break (=="--+") xs in a ++ "" : loop (drop 1 b) where
                   else
                      let (a, b) =
                            span (\y -> case y of c:_ -> isSpace c; _ -> True) l
-                     in doImport (intercalate "\n" $ x' : a) : loop b
+                     in doImport (intercalate "\n" $ map decomment $ x' : a)
+                           : loop b
               | __ = skip
               where skip = x : loop l
    loop _ = []
-   doImport blk = go 0 "" rest where
-      (name, rest) =
-         case break (\c -> c==',' || isSpace c) blk of
-            (a, b) | '"':_ <- dropWhile isSpace a
-                     , (b1, b2) <- break (==' ') $ dropWhile isSpace b
-                        -> (a ++ " " ++ b1, b2)
-            pair -> pair
-      go :: Int -> String -> String -> String
-      go p acc nx =
-         let (nx1, nx2) = break (`elem` ",()") nx
-             acc' = acc ++ nx1
-         in case nx2 of
-            '(':b          -> go (p+1) (acc' ++ "(") b
-            ')':b | p > 0  -> go (p-1) (acc' ++ ")") b
-            ',':b | p == 0 ->
-               render acc' ++ (if all isSpace b then "" else ";" ++ go 0 "" b)
-            c:b            -> go p (acc' ++ [c]) b
-            _              -> render acc'
-      render acc =
-         "import "
-            ++ (if "as" `isPrefixOf` dropWhile isSpace acc
-                  then "qualified " else "")
-            ++ name ++ " " ++ acc
+
+doImport :: String -> String
+doImport blk = go 0 "" rest where
+   (name, rest) =
+      case break (\c -> c==',' || isSpace c) blk of
+         (a, b) | '"':_ <- dropWhile isSpace a
+                  , (b1, b2) <- break (==' ') $ dropWhile isSpace b
+                     -> (a ++ " " ++ b1, b2)
+         pair -> pair
+   go :: Int -> String -> String -> String
+   go p acc nx =
+      let (nx1, nx2) = break (`elem` ",()") nx
+          acc' = acc ++ nx1
+      in case nx2 of
+         '(':b          -> go (p+1) (acc' ++ "(") b
+         ')':b | p > 0  -> go (p-1) (acc' ++ ")") b
+         ',':b | p == 0 ->
+            render acc' ++ (if all isSpace b then "" else ";" ++ go 0 "" b)
+         c:b            -> go p (acc' ++ [c]) b
+         _              -> render acc'
+   render acc =
+      "import "
+         ++ (if "as" `isPrefixOf` dropWhile isSpace acc
+               then "qualified " else "")
+         ++ name ++ " " ++ acc
 
 process :: String -> String 
 process =
