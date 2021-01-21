@@ -212,17 +212,15 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
 
 imports :: [String] -> [String]
 imports xs = let (a, b) = break (=="--+") xs in a ++ "" : loop (drop 1 b) where
-   loop (x:l) | "import " `isPrefixOf` x
-               , x' <- dropWhile isSpace $ drop 6 x
-               = if "qualified" `isPrefixOf` x'
-                  then warn "Use of qualified in multiplex import." skip
-                  else
-                     let (a, b) =
-                           span (\y -> case y of c:_ -> isSpace c; _ -> True) l
-                     in doImport (intercalate "\n" $ map decomment $ x' : a)
-                           : loop b
-              | __ = skip
-              where skip = x : loop l
+   loop (x:l)
+      | "import " `isPrefixOf` x, x' <- dropWhile isSpace $ drop 6 x
+         = if "qualified" `isPrefixOf` x'
+            then warn "Use of qualified in multiplex import." skip
+            else
+               let (a, b) = span (\y -> case y of c:_ -> isSpace c; _ -> True) l
+               in doImport (intercalate "\n" $ map decomment $ x' : a) : loop b
+      | __ = skip
+      where skip = x : loop l
    loop _ = []
 
 doImport :: String -> String
@@ -230,8 +228,8 @@ doImport blk = go 0 "" rest where
    (name, rest) =
       case break (\c -> c==',' || isSpace c) blk of
          (a, b) | '"':_ <- dropWhile isSpace a
-                  , (b1, b2) <- break (==' ') $ dropWhile isSpace b
-                     -> (a ++ " " ++ b1, b2)
+                , (b1, b2) <- break (==' ') $ dropWhile isSpace b
+              -> (a ++ " " ++ b1, b2)
          pair -> pair
    go :: Int -> String -> String -> String
    go p acc nx =
