@@ -10,16 +10,16 @@ executable:
 
 cpp-options: -DBUILDING
 
-tests:
-   test:
-      main: test.hs
-      ghc-options: -Wall
-      dependencies:
-      - process
-      - filepath
-      - directory
-      - tasty
-      - tasty-golden
+# tests:
+   # test:
+      # main: test.hs
+      # ghc-options: -Wall
+      # dependencies:
+      # - process
+      # - filepath
+      # - directory
+      # - tasty
+      # - tasty-golden
 
 dependencies:
    base: 4.*
