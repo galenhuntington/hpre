@@ -1,13 +1,16 @@
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE CPP, LambdaCase #-}
 
-import System.Environment
-import Data.Char
+import Control.Monad
 import Control.Monad.State
+import Data.Char
+import Data.Functor (($>))
 import Data.List
 import Data.Maybe
-import Debug.Trace
 import Data.Version
-import Text.Read.Lex
+
+import Debug.Trace (trace)
+import System.Environment (getArgs)
+import Text.Read.Lex (isSymbolChar)
 
 #ifdef BUILDING
 import Paths_hpre (version)
@@ -151,7 +154,7 @@ dittoM line = do
       '-':'-':_ -> pure line
       '{':'-':_ -> pure line
       '-':'}':_ -> pure line
-      _         -> put' hist *> pure line
+      _         -> put' hist $> line
 
 dittoMarks :: [String] -> [String]
 dittoMarks inp = flip evalState [] $ traverse dittoM inp
@@ -217,7 +220,7 @@ imports xs = let (a, b) = break (=="--+") xs in a ++ "" : loop (drop 1 b) where
          = if "qualified" `isPrefixOf` x'
             then warn "Use of qualified in multiplex import." skip
             else
-               let (a, b) = span (\y -> case y of c:_ -> isSpace c; _ -> True) l
+               let (a, b) = span (\case c:_ -> isSpace c; _ -> True) l
                in doImport (intercalate "\n" $ map decomment $ x' : a) : loop b
       | __ = skip
       where skip = x : loop l

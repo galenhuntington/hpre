@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 247dfa65bba5f5b464e63dec8fed0b62b92564d830668c7abf0ecfdd78901e26
+-- hash: 174a53798f35e8e913b9799c73cc447b8220bef13deafa4a2a88b9b3c3714d52
 
 name:           hpre
-version:        1.8.5.1
+version:        1.8.5.2
 synopsis:       Simple but handy Haskell preprocessor.
 category:       Language
 author:         Galen Huntington
