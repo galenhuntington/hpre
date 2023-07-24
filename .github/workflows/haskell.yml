@@ -5,14 +5,14 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        ghc: ['8.4', '9.2', 'latest']
+        ghc: ['8.4', 'latest']
     name: GHC ${{ matrix.ghc }}
     steps:
       - uses: actions/checkout@v3
       - uses: haskell/actions/setup@v2
         with:
           ghc-version: ${{ matrix.ghc }}
-      - run: cabal test
+      - run: cabal build && cabal test
   stack:
     runs-on: 'ubuntu-latest'
     name: Stack
