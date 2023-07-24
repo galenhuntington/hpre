@@ -12,7 +12,7 @@ jobs:
       - uses: haskell/actions/setup@v2
         with:
           ghc-version: ${{ matrix.ghc }}
-      - run: cabal build && cabal test
+      - run: cabal install && cabal test
   stack:
     runs-on: 'ubuntu-latest'
     name: Stack
