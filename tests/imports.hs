@@ -8,3 +8,5 @@ import Data.Ord, as Ord
 import Data.List, -- comment
    as List
 
+-- ignored
+--+

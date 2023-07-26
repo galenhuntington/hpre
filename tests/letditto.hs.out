@@ -5,4 +5,3 @@ foo{-#COLUMN 5#-}0 = not $ let once True = let twice False = False
                   once{-#COLUMN 24#-}_    = False
               in once True
 foo{-#COLUMN 5#-}x = True
-

@@ -35,4 +35,3 @@ constraint = read . show
 slice :: Int -> Int
 slice = fst . (5,)
 
-

@@ -8,3 +8,5 @@ import Data.Ord ;import qualified Data.Ord  as Ord
 import Data.List ;import qualified Data.List 
    as List
 
+-- ignored
+

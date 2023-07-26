@@ -20,7 +20,7 @@ getBinDir = pure "."
 #endif
 
 data OutErr = OutErr !String !String
-   deriving (Eq)
+   deriving (Eq, Show)
 
 runHpre :: String -> IO OutErr
 runHpre inp = do
@@ -43,7 +43,7 @@ runTest ref
       name
       (OutErr <$> get "out" <*> get "err")
       (runHpre =<< readFile ref)
-      (\x y -> pure $ guard (x/=y) $> "")
+      (\x y -> pure $ guard (x/=y) $> (show x ++ " vs. " ++ show y))
       (\ (OutErr o e) -> write "out" o *> write "err" e)
    where
    name = takeFileName ref

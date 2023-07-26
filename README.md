@@ -12,9 +12,15 @@ Here are the features, along with their rationales:
 
 ##  Ticked numbers
 
+<details>
+
+<summary>This feature is deprecated and is disabled when multiplex
+imports are enabled.</summary>
+
 _An extension `NumericUnderscores` landed in GHC 8.6 that meets
-this need; as such, this feature is deprecated and will eventually
-be removed._
+this need.  This feature is therefore redundant and deprecated.
+It is turned off when `--+` is used to indicate newer hpre features,
+and may eventually be completely removed._
 
 Large integer literals can be hard to read off.  Many languages
 provide native syntax for spacing them out.  For example, Perl allows
@@ -34,6 +40,7 @@ mostly a row of zeroes, such as `1'073'741'824`.
 No existing Haskell syntax (including GHC extensions) appears to
 conflict with either notation.
 
+</details>
 
 ##  Trailing commas and the like
 
@@ -452,12 +459,12 @@ separating off an empty specifier with a comma.
 
 Unlike all other `hpre` features, multiplex imports can change the
 meaning of valid Haskell programs, since `as` imports all become
-qualified.  For this reason, it is off by default, and is activated
-by putting `--+` on a line by itself, which causes import statements
-to be processed from then on.
+qualified.  For this reason, it is off by default, and is enabled by
+putting `--+` on a line by itself, which causes import statements to
+be processed from then on.
 
 While having the feature on all the time is worth considering in say
-a (breaking) 2.0 release, my inclination is to keep this buffer so
+a (breaking) 3.0 release, my inclination is to keep this buffer so
 `hpre` is always “safe” to use.
 
 

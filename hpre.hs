@@ -22,6 +22,8 @@ version = Version [] ["n/a"]
 --  YMMV
 tabWidth = 3 :: Int
 
+importMarker = "--+" :: String
+
 {-# INLINE __ #-}
 __ = True  -- second-best
 
@@ -56,24 +58,27 @@ isNameChar c = isAlphaNum c || c=='\'' || c=='_'
 --  With NumericUnderscores an accepted extension, this is deprecated.
 --  It should be removed eventually, as it can interfere with alignment
 --  (and that isn't worth fixing since deprecated).
-tickedNums :: String -> String
-tickedNums l@(x:m)
+tickedNumLine :: String -> String
+tickedNumLine l@(x:m)
    | isDigit x =
       let (p1, p2) = span (\y -> isDigit y || isTick y) l
           p1' = filter (not.isTick) p1
                   ++ reverse (takeWhile isTick $ reverse p1) -- prob not needed
       in (if p1/=p1' && '\'' `elem` p1 then warn "Ticked numbers are deprecated." else id)
-            $ p1' ++ tickedNums p2
+            $ p1' ++ tickedNumLine p2
    | isNameChar x =
       let (nm, rest) = span isNameChar l
-      in nm ++ tickedNums rest
+      in nm ++ tickedNumLine rest
    | x=='\\' || x=='\'', mh:mt <- m
-               = x : mh : tickedNums mt
-   | x=='"'    = let (a, b) = skipQuote m in '"' : a ++ tickedNums b
-   | __        = x : tickedNums m
+               = x : mh : tickedNumLine mt
+   | x=='"'    = let (a, b) = skipQuote m in '"' : a ++ tickedNumLine b
+   | __        = x : tickedNumLine m
   where
    isTick c = c == '\'' || c == '_'
-tickedNums _       = []
+tickedNumLine _ = []
+
+tickedNums :: [String] -> [String]
+tickedNums ls = if "--+" `elem` ls then ls else map tickedNumLine ls
 
 elseWord :: String
 elseWord = "True"
@@ -214,8 +219,9 @@ dataBarsL (l:ls) = fromMaybe (l : dataBarsL ls) $ do
    pure $ l : comms ++ nxt' : dataBarsL ls'
 
 imports :: [String] -> [String]
-imports xs = let (a, b) = break (=="--+") xs in a ++ "" : loop (drop 1 b) where
+imports xs = let (a, b) = break (== importMarker) xs in a ++ loop b where
    loop (x:l)
+      | x == importMarker = "" : loop l
       | "import " `isPrefixOf` x, x' <- dropWhile isSpace $ drop 6 x
          = if "qualified" `isPrefixOf` x'
             then warn "Use of qualified in multiplex import." skip
@@ -254,7 +260,7 @@ doImport blk = go 0 "" rest where
 process :: String -> String 
 process =
    unlines . imports . dataBarsL . commasL . commasR . dittoMarks
-      . map (emptyGuard . tickedNums . untab) . lines
+      . map (emptyGuard . untab) . tickedNums . lines
 
 main = do
    args <- getArgs

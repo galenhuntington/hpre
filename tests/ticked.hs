@@ -1,4 +1,6 @@
 x :: Int
 x = 1'234'567
 
--- TODO line added to end?
+y :: Double
+y = 299_792_458.123_456
+

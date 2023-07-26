@@ -1,5 +1,6 @@
 x :: Int
 x = 1234567
 
--- TODO line added to end?
+y :: Double
+y = 299792458.123456
 
