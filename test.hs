@@ -7,7 +7,7 @@ import System.Directory (removeFile)
 import Control.Exception
 import Control.Monad
 import System.FilePath
-import Data.List (sort)
+import Data.List (sort, isSuffixOf)
 
 import Test.Tasty (defaultMain, TestTree, testGroup)
 import Test.Tasty.Golden
@@ -26,7 +26,9 @@ runHpre :: String -> IO OutErr
 runHpre inp = do
    hpre <- (++ "/hpre") <$> getBinDir
    (ec, out, err) <- readProcessWithExitCode hpre [] inp
-   pure $ OutErr (case ec of ExitSuccess -> out; _ -> "") err
+   -- GHC 9.10 adds an extra newline to errors
+   let err' = if "\n\n" `isSuffixOf` err then init err else err
+   pure $ OutErr (case ec of ExitSuccess -> out; _ -> "") err'
 
 loadMayFile :: FilePath -> IO String
 loadMayFile fn =
