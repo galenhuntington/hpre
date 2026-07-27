@@ -1,5 +1,0 @@
-y :: Int
-y = 1_234_567
-
--- this line anywhere in the file disables ticked numbers
---+

@@ -14,8 +14,9 @@ Here are the features, along with their rationales:
 
 <details>
 
-<summary>This feature is deprecated and is disabled when multiplex
-imports are enabled.</summary>
+<summary>This feature is deprecated.  As of 2.0, it is disabled
+when multiplex imports are enabled.  As of 3.0, it is removed
+completely.</summary>
 
 _An extension `NumericUnderscores` landed in GHC 8.6 that meets
 this need.  This feature is therefore redundant and deprecated.

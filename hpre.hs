@@ -27,9 +27,6 @@ importMarker = "--+" :: String
 {-# INLINE __ #-}
 __ = True  -- second-best
 
-warn :: String -> a -> a
-warn = trace . ("Warning: " ++)
-
 abort :: String -> a
 abort = errorWithoutStackTrace
 
@@ -52,33 +49,6 @@ untab = go (0::Int) where
 
 isNameChar :: Char -> Bool
 isNameChar c = isAlphaNum c || c=='\'' || c=='_'
-
---  Allow "ticks" or "underscores" as digit separators.
---  That is, not settling on one proposal yet.
---  With NumericUnderscores an accepted extension, this is deprecated.
---  It should be removed eventually, as it can interfere with alignment
---  (and that isn't worth fixing since deprecated).
-tickedNumLine :: String -> String
-tickedNumLine l@(x:m)
-   | isDigit x =
-      let (p1, p2) = span (\y -> isDigit y || isTick y) l
-          p1' = filter (not.isTick) p1
-                  ++ reverse (takeWhile isTick $ reverse p1) -- prob not needed
-      in (if p1/=p1' && '\'' `elem` p1 then warn "Ticked numbers are deprecated." else id)
-            $ p1' ++ tickedNumLine p2
-   | isNameChar x =
-      let (nm, rest) = span isNameChar l
-      in nm ++ tickedNumLine rest
-   | x=='\\' || x=='\'', mh:mt <- m
-               = x : mh : tickedNumLine mt
-   | x=='"'    = let (a, b) = skipQuote m in '"' : a ++ tickedNumLine b
-   | __        = x : tickedNumLine m
-  where
-   isTick c = c == '\'' || c == '_'
-tickedNumLine _ = []
-
-tickedNums :: [String] -> [String]
-tickedNums ls = if "--+" `elem` ls then ls else map tickedNumLine ls
 
 elseWord :: String
 elseWord = "True"
@@ -224,7 +194,7 @@ imports xs = let (a, b) = break (== importMarker) xs in a ++ loop b where
       | x == importMarker = "" : loop l
       | "import " `isPrefixOf` x, x' <- dropWhile isSpace $ drop 6 x
          = if "qualified" `isPrefixOf` x'
-            then warn "Use of qualified in multiplex import." skip
+            then abort "Use of 'qualified' in multiplex import."
             else
                let (a, b) = span (\case c:_ -> isSpace c; _ -> True) l
                in doImport (intercalate "\n" $ map decomment $ x' : a) : loop b
@@ -260,7 +230,7 @@ doImport blk = go 0 "" rest where
 process :: String -> String 
 process =
    unlines . imports . dataBarsL . commasL . commasR . dittoMarks
-      . map (emptyGuard . untab) . tickedNums . lines
+      . map (emptyGuard . untab) . lines
 
 main = do
    args <- getArgs
