@@ -1,3 +1,7 @@
+**This has been reimplemented in Rust, and that is
+where future development is planned to be.**  Please see
+https://github.com/galenhuntington/hpre-rs.
+
 `hpre` is a simple Haskell code preprocessor that adds a few minor
 syntactic features.  They are meant to be minimal, and increase
 productivity without harming readability.
